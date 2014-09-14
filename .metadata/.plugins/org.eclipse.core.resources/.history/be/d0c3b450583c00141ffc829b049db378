@@ -1,0 +1,11 @@
+-buildpath:  \
+	osgi.core,\
+	osgi.cmpn,\
+	biz.aQute.bnd.annotation,\
+	${junit},\
+	pentaho-platform-api-osgi;version=latest
+Bundle-Version: 0.0.0.${tstamp}
+Private-Package:  \
+	pentaho-platform-scheduler-osgi
+Service-Component:  \
+	*

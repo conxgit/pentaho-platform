@@ -1,0 +1,9 @@
+-buildpath:  \
+	osgi.core,\
+	osgi.cmpn,\
+	biz.aQute.bnd.annotation,\
+	${junit},\
+	pentaho-platform-api-osgi;version=latest,\
+	org.quartz-scheduler.quartz;version=2.2
+-sub:  \
+	*.bnd

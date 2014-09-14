@@ -1,0 +1,5 @@
+package org.pentaho.platform.scheduler3.osgi;
+
+public class Activator {
+
+}

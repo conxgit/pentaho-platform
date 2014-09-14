@@ -1,0 +1,7 @@
+-buildpath:  \
+	org.apache.commons.collections;version=3.2,\
+	org.apache.commons.lang;version=2.4,\
+	org.apache.commons.logging;version=1.2
+Bundle-Version: 1.0.0.${tstamp}
+Export-Package:  \
+	api-osgi

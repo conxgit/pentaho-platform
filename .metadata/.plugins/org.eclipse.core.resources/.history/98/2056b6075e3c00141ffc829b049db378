@@ -1,0 +1,8 @@
+-buildpath:  \
+	osgi.core,\
+	osgi.cmpn,\
+	pentaho-platform-api-osgi;version=latest,\
+	org.quartz-scheduler.quartz;version=2.2,\
+	org.apache.felix.dependencymanager
+-sub:  \
+	*.bnd

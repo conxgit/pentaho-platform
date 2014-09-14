@@ -1,0 +1,6 @@
+Bundle-SymbolicName: pentaho-platform-api-osgi
+Bundle-Version: 1.0.0.${tstamp}
+Export-Package:  \
+	org.pentaho.platform.api.action,\
+	org.pentaho.platform.api.cache,\
+	org.pentaho.platform.api.email
