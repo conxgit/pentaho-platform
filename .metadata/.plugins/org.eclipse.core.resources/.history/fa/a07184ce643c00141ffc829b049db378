@@ -101,7 +101,7 @@ public class ActionAdapterQuartzJob implements Job {
         try {
           Thread.sleep( RETRY_SLEEP_AMOUNT );
         } catch ( InterruptedException ie ) {
-          log.log(LogService.LOG_INFO, ie.getMessage(), ie );
+          log.info( ie.getMessage(), ie );
         }
       }
     }

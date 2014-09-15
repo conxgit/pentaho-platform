@@ -101,7 +101,7 @@ public class ActionAdapterQuartzJob implements Job {
         try {
           Thread.sleep( RETRY_SLEEP_AMOUNT );
         } catch ( InterruptedException ie ) {
-          log.log(LogService.LOG_INFO, ie.getMessage(), ie );
+          log.info( ie.getMessage(), ie );
         }
       }
     }
@@ -278,12 +278,12 @@ public class ActionAdapterQuartzJob implements Job {
               String jobName = jobKey.getJobName();
               jobParams.put( QuartzScheduler.RESERVEDMAPKEY_RESTART_FLAG, Boolean.TRUE );
               scheduler.createJob( jobName, iaction, jobParams, trigger, streamProvider );
-              log.log(LogService.LOG_WARNING, "New RunOnce job created for " + jobName + " -> possible startup synchronization error" );
+              log.warn( "New RunOnce job created for " + jobName + " -> possible startup synchronization error" );
               return null;
             }
           } );
         } else {
-          log.log(LogService.LOG_WARNING, "RunOnce already created, skipping" );
+          log.warn( "RunOnce already created, skipping" );
           throw new Exception( t );
         }
       }
@@ -292,7 +292,7 @@ public class ActionAdapterQuartzJob implements Job {
     scheduler.fireJobCompleted( actionBean, actionUser, params, streamProvider );
 
     if ( requiresUpdate ) {
-      log.log(LogService.LOG_WARNING, "Output path for job: " + context.getJobDetail().getName() + " has changed. Job requires update" );
+      log.warn( "Output path for job: " + context.getJobDetail().getName() + " has changed. Job requires update" );
       try {
         final IJobTrigger trigger = scheduler.getJob( context.getJobDetail().getName() ).getJobTrigger();
         final Class<IAction> iaction = (Class<IAction>) actionBean.getClass();
@@ -309,18 +309,21 @@ public class ActionAdapterQuartzJob implements Job {
             String jobName = jobKey.getJobName();
             org.pentaho.platform.api.scheduler2.Job j =
                 scheduler.createJob( jobName, iaction, jobParams, trigger, streamProvider );
-            log.log(LogService.LOG_WARNING, "New Job: " + j.getJobId() + " created" );
+            log.warn( "New Job: " + j.getJobId() + " created" );
             return null;
           }
         } );
       } catch ( Exception e ) {
-        log.log(LogService.LOG_ERROR, e.getMessage(), e );
+        log.error( e.getMessage(), e );
       }
     }
 
-      log.log(LogService.LOG_DEBUG,  MessageFormat.format(
+    if ( log.isDebugEnabled() ) {
+      log.debug( MessageFormat.format(
           "Scheduling system successfully invoked action {0} as user {1} with params [ {2} ]", actionBean //$NON-NLS-1$
               .getClass().getName(), actionUser, QuartzScheduler.prettyPrintMap( params ) ) );
+    }
+
   }
 
   private void sendEmail( Map<String, Object> actionParams, Map<String, Serializable> params, String filePath ) {
@@ -403,7 +406,7 @@ public class ActionAdapterQuartzJob implements Job {
       }
       emailer.send();
     } catch ( Exception e ) {
-      log.log(LogService.LOG_WARNING, e.getMessage(), e );
+      log.warn( e.getMessage(), e );
     }      
   }
 
@@ -412,12 +415,12 @@ public class ActionAdapterQuartzJob implements Job {
 
     public LoggingJobExecutionException( String msg ) {
       super( msg );
-      log.log(LogService.LOG_ERROR, msg );
+      log.error( msg );
     }
 
     public LoggingJobExecutionException( String msg, Throwable t ) {
       super( msg, t );
-      log.log(LogService.LOG_ERROR, msg, t );
+      log.error( msg, t );
     }
 
   }

@@ -17,7 +17,8 @@
 
 package org.pentaho.platform.scheduler3.quartz;
 
-import org.osgi.service.log.LogService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.scheduler2.IBlockoutManager;
 import org.pentaho.platform.scheduler3.blockout.BlockoutAction;
 import org.pentaho.platform.scheduler3.blockout.PentahoBlockoutManager;
@@ -32,20 +33,17 @@ import org.quartz.SchedulerException;
  * @author kwalker
  */
 public class BlockingQuartzJob implements Job {
-	
-	private volatile LogService log;
-	
   public void execute( final JobExecutionContext jobExecutionContext ) throws JobExecutionException {
     try {
       if ( getBlockoutManager().shouldFireNow() || isBlockoutAction( jobExecutionContext ) ) { // We should always let the blockouts fire //$NON-NLS-1$
         createUnderlyingJob().execute( jobExecutionContext );
       } else {
-        log.log(LogService.LOG_WARNING,
+        getLogger().warn(
             "Job '" + jobExecutionContext.getJobDetail().getName()
                 + "' attempted to run during a blockout period.  This job was not executed" );
       }
     } catch ( SchedulerException e ) {
-      log.log(LogService.LOG_WARNING,
+      getLogger().warn(
           "Got Exception retrieving the Blockout Manager for job '" + jobExecutionContext.getJobDetail().getName()
               + "'. Executing the underlying job anyway", e );
       createUnderlyingJob().execute( jobExecutionContext );
@@ -59,13 +57,17 @@ public class BlockingQuartzJob implements Job {
   Job createUnderlyingJob() {
     return new ActionAdapterQuartzJob();
   }
+
+  Log getLogger() {
+    return LogFactory.getLog( BlockingQuartzJob.class );
+  }
   
   protected boolean isBlockoutAction( JobExecutionContext ctx ) {
     try {
       String actionClass = ctx.getJobDetail().getJobDataMap().getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS );
       return BlockoutAction.class.getName().equals( actionClass );
     } catch ( Throwable t ) {
-      log.log(LogService.LOG_WARNING, t.getMessage(), t );
+      getLogger().warn( t.getMessage(), t );
       return false;
     }
   }    

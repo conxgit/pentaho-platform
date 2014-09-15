@@ -67,11 +67,9 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
-import org.quartz.impl.matchers.GroupMatcher;
 
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek;
@@ -462,23 +460,23 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
     try {
       Scheduler scheduler = getQuartzScheduler();
       for ( String groupName : scheduler.getJobGroupNames() ) {
-        for ( JobKey jobKey : scheduler.getJobKeys( GroupMatcher.jobGroupEquals(groupName)) ) {
-          for ( Trigger trigger : scheduler.getTriggersOfJob( jobKey ) ) {
+        for ( String jobId : scheduler.getJobNames( groupName ) ) {
+          for ( Trigger trigger : scheduler.getTriggersOfJob( jobId, groupName ) ) {
             Job job = new Job();
             job.setGroupName( groupName );
-            JobDetail jobDetail = scheduler.getJobDetail( jobKey );
+            JobDetail jobDetail = scheduler.getJobDetail( jobId, groupName );
             if ( jobDetail != null ) {
-              job.setUserName( jobDetail.getKey().getGroup() );
+              job.setUserName( jobDetail.getGroup() );
               JobDataMap jobDataMap = jobDetail.getJobDataMap();
               if ( jobDataMap != null ) {
-                Map<String, Serializable> wrappedMap = toSerializableValueMap(jobDataMap.getWrappedMap());
+                Map<String, Serializable> wrappedMap = jobDataMap.getWrappedMap();
                 job.setJobParams( wrappedMap );
               }
             }
 
-            job.setJobId( jobKey.getName() );
+            job.setJobId( jobId );
             setJobTrigger( scheduler, job, trigger );
-            job.setJobName( QuartzJobKey.parse( jobKey.getName() ).getJobName() );
+            job.setJobName( QuartzJobKey.parse( jobId ).getJobName() );
             job.setNextRun( trigger.getNextFireTime() );
             job.setLastRun( trigger.getPreviousFireTime() );
             if ( ( filter == null ) || filter.accept( job ) ) {
@@ -529,21 +527,21 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
       complexJobTrigger.setCronString( ( (CronTrigger) trigger ).getCronExpression() );
     }
 
-    TriggerState triggerState = scheduler.getTriggerState( new TriggerKey(job.getJobId(), groupName) );
+    int triggerState = scheduler.getTriggerState( job.getJobId(), groupName );
     switch ( triggerState ) {
-      case NORMAL:
+      case Trigger.STATE_NORMAL:
         job.setState( JobState.NORMAL );
         break;
-      case BLOCKED:
+      case Trigger.STATE_BLOCKED:
         job.setState( JobState.BLOCKED );
         break;
-      case COMPLETE:
+      case Trigger.STATE_COMPLETE:
         job.setState( JobState.COMPLETE );
         break;
-      case ERROR:
+      case Trigger.STATE_ERROR:
         job.setState( JobState.ERROR );
         break;
-      case PAUSED:
+      case Trigger.STATE_PAUSED:
         job.setState( JobState.PAUSED );
         break;
       default:

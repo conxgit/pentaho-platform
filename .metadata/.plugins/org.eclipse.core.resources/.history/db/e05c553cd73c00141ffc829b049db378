@@ -67,7 +67,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
@@ -529,21 +528,21 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
       complexJobTrigger.setCronString( ( (CronTrigger) trigger ).getCronExpression() );
     }
 
-    TriggerState triggerState = scheduler.getTriggerState( new TriggerKey(job.getJobId(), groupName) );
+    int triggerState = scheduler.getTriggerState( job.getJobId(), groupName );
     switch ( triggerState ) {
-      case NORMAL:
+      case Trigger.STATE_NORMAL:
         job.setState( JobState.NORMAL );
         break;
-      case BLOCKED:
+      case Trigger.STATE_BLOCKED:
         job.setState( JobState.BLOCKED );
         break;
-      case COMPLETE:
+      case Trigger.STATE_COMPLETE:
         job.setState( JobState.COMPLETE );
         break;
-      case ERROR:
+      case Trigger.STATE_ERROR:
         job.setState( JobState.ERROR );
         break;
-      case PAUSED:
+      case Trigger.STATE_PAUSED:
         job.setState( JobState.PAUSED );
         break;
       default:
