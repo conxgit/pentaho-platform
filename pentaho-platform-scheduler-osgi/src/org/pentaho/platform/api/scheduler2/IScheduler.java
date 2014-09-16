@@ -48,7 +48,7 @@ public interface IScheduler {
    * @throws SchedulerException
    *           If the job could not be scheduled
    */
-  public Job createJob( String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
+  public Job createJob( String curUser, String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
       IJobTrigger trigger ) throws SchedulerException;
 
   /**
@@ -66,7 +66,7 @@ public interface IScheduler {
    * @throws SchedulerException
    *           If the job could not be scheduled
    */
-  public Job createJob( String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger )
+  public Job createJob( String curUser, String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger )
     throws SchedulerException;
 
   /**
@@ -87,7 +87,7 @@ public interface IScheduler {
    * @throws SchedulerException
    *           If the job could not be scheduled
    */
-  public Job createJob( String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
+  public Job createJob(  String curUser, String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
       IJobTrigger trigger, IBackgroundExecutionStreamProvider outputStreamProvider ) throws SchedulerException;
 
   /**
@@ -108,7 +108,7 @@ public interface IScheduler {
    * @throws SchedulerException
    *           If the job could not be scheduled
    */
-  public Job createJob( String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger,
+  public Job createJob(  String curUser, String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger,
       IBackgroundExecutionStreamProvider outputStreamProvider ) throws SchedulerException;
 
   /**

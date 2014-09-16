@@ -30,6 +30,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.api.action.IAction;
+import org.pentaho.platform.api.action.IActionPluginManager;
 import org.pentaho.platform.api.action.IStreamingAction;
 import org.pentaho.platform.api.action.IVarArgsAction;
 import org.pentaho.platform.api.engine.IPluginManager;
@@ -75,36 +76,21 @@ public class ActionAdapterQuartzJob implements Job {
   
   private volatile IScheduler scheduler;
   
-  protected Class<?> resolveClass( JobDataMap jobDataMap ) throws  JobExecutionException {
+  protected IAction resolveAction( IActionPluginManager pluginManager, JobDataMap jobDataMap ) throws  JobExecutionException {
     String actionClass = jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS );
     String actionId = jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONID );
 
-    Class<?> clazz = null;
+    
 
     if ( StringUtils.isEmpty( actionId ) && StringUtils.isEmpty( actionClass ) ) {
       throw new LoggingJobExecutionException( Messages.getInstance().getErrorString(
           "ActionAdapterQuartzJob.ERROR_0001_REQUIRED_PARAM_MISSING", //$NON-NLS-1$
           QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS, QuartzScheduler.RESERVEDMAPKEY_ACTIONID ) );
     }
-
-    for ( int i = 0; i < RETRY_COUNT; i++ ) {
-      try {
-        if ( !StringUtils.isEmpty( actionId ) ) {
-          IPluginManager pluginManager = PentahoSystem.get( IPluginManager.class );
-          clazz = pluginManager.loadClass( actionId );
-          return clazz;
-        } else if ( !StringUtils.isEmpty( actionClass ) ) {
-          clazz = Class.forName( actionClass );
-          return clazz;
-        }
-      } catch ( Throwable t ) {
-        try {
-          Thread.sleep( RETRY_SLEEP_AMOUNT );
-        } catch ( InterruptedException ie ) {
-          log.log(LogService.LOG_INFO, ie.getMessage(), ie );
-        }
-      }
-    }
+    
+    IAction action = pluginManager.getActionPluginByActionId( actionId ).newInstance();
+    
+    return action;
 
     // we have failed to locate the class for the actionClass
     // and we're giving up waiting for it to become available/registered
@@ -118,28 +104,20 @@ public class ActionAdapterQuartzJob implements Job {
   public void execute( JobExecutionContext context ) throws JobExecutionException {
     JobDataMap jobDataMap = context.getMergedJobDataMap();
     String actionUser = jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONUSER );
+    IActionPluginManager pluginManager = (IActionPluginManager)jobDataMap.get("IActionPluginManager");
 
-    Object bean;
-    Class<?> actionClass = null;
-    try {
-      actionClass = resolveClass( jobDataMap );
-      bean = actionClass.newInstance();
-    } catch ( Exception e ) {
-      throw new LoggingJobExecutionException( Messages.getInstance().getErrorString(
-          "ActionAdapterQuartzJob.ERROR_0002_FAILED_TO_CREATE_ACTION", //$NON-NLS-1$
-          ( actionClass == null ) ? "unknown" : actionClass.getName() ), e ); //$NON-NLS-1$
-    }
+    Object bean = resolveAction( pluginManager, jobDataMap );
 
     if ( !( bean instanceof IAction ) ) {
       throw new LoggingJobExecutionException( Messages.getInstance().getErrorString(
-          "ActionAdapterQuartzJob.ERROR_0003_ACTION_WRONG_TYPE", actionClass.getName(), //$NON-NLS-1$
+          "ActionAdapterQuartzJob.ERROR_0003_ACTION_WRONG_TYPE", jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS ), //$NON-NLS-1$
           IAction.class.getName() ) );
     }
 
     final IAction actionBean = (IAction) bean;
 
     try {
-      invokeAction( actionBean, actionUser, context, jobDataMap.getWrappedMap() );
+      invokeAction( actionBean, actionUser, context, GeneralUtils.toSerializableValueMap(jobDataMap.getWrappedMap()) );
 
     } catch ( Throwable t ) {
       // ensure that scheduler thread isn't blocked on lock

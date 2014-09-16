@@ -1,0 +1,5 @@
+package org.pentaho.platform.scheduler3.quartz;
+
+public class GeneralUtils {
+
+}

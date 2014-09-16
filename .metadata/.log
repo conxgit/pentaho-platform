@@ -1507,3 +1507,12 @@ Java Model Exception: Java Model Status [pentaho-platform-api-osgi does not exis
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1465)
 !SUBENTRY 1 org.eclipse.jdt.core 4 969 2014-09-13 19:14:33.699
 !MESSAGE pentaho-platform-api-osgi does not exist
+
+!ENTRY org.eclipse.jdt.core 4 0 2014-09-15 12:32:12.929
+!MESSAGE Invalid ZIP archive: test-lib/kettle-core-TRUNK-SNAPSHOT.jar [in scheduler]
+
+!ENTRY org.eclipse.jdt.core 4 0 2014-09-15 12:32:12.930
+!MESSAGE Invalid ZIP archive: test-lib/kettle-engine-TRUNK-SNAPSHOT.jar [in scheduler]
+
+!ENTRY org.eclipse.jdt.core 4 0 2014-09-15 12:32:12.934
+!MESSAGE Invalid ZIP archive: test-lib/pentaho-metadata-TRUNK-SNAPSHOT.jar [in scheduler]

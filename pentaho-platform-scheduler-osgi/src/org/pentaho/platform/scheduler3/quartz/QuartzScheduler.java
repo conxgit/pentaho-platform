@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.api.action.IAction;
-import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.scheduler2.ComplexJobTrigger;
 import org.pentaho.platform.api.scheduler2.IBackgroundExecutionStreamProvider;
 import org.pentaho.platform.api.scheduler2.IJobFilter;
@@ -48,8 +47,6 @@ import org.pentaho.platform.api.scheduler2.JobTrigger;
 import org.pentaho.platform.api.scheduler2.SchedulerException;
 import org.pentaho.platform.api.scheduler2.SimpleJobTrigger;
 import org.pentaho.platform.api.scheduler2.recur.ITimeRecurrence;
-import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.scheduler3.messsages.Messages;
 import org.pentaho.platform.scheduler3.recur.IncrementalRecurrence;
 import org.pentaho.platform.scheduler3.recur.QualifiedDayOfMonth;
@@ -164,19 +161,19 @@ public class QuartzScheduler implements IScheduler {
   }
 
   /** {@inheritDoc} */
-  public Job createJob( String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger )
+  public Job createJob(  String curUser, String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger )
     throws SchedulerException {
     return createJob( jobName, actionId, jobParams, trigger, null );
   }
 
   /** {@inheritDoc} */
-  public Job createJob( String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
+  public Job createJob( String curUser, String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
       IJobTrigger trigger ) throws SchedulerException {
-    return createJob( jobName, action, jobParams, trigger, null );
+    return createJob( curUser, jobName, action, jobParams, trigger, null );
   }
 
   /** {@inheritDoc} */
-  public Job createJob( String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
+  public Job createJob( String curUser, String jobName, Class<? extends IAction> action, Map<String, Serializable> jobParams,
       IJobTrigger trigger, IBackgroundExecutionStreamProvider outputStreamProvider ) throws SchedulerException {
 
     if ( action == null ) {
@@ -188,13 +185,13 @@ public class QuartzScheduler implements IScheduler {
     }
 
     jobParams.put( RESERVEDMAPKEY_ACTIONCLASS, action.getName() );
-    Job ret = createJob( jobName, jobParams, trigger, outputStreamProvider );
+    Job ret = createJob( curUser, jobName, jobParams, trigger, outputStreamProvider );
     ret.setSchedulableClass( action.getName() );
     return ret;
   }
 
   /** {@inheritDoc} */
-  public Job createJob( String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger,
+  public Job createJob( String curUser, String jobName, String actionId, Map<String, Serializable> jobParams, IJobTrigger trigger,
       IBackgroundExecutionStreamProvider outputStreamProvider ) throws SchedulerException {
     if ( StringUtils.isEmpty( actionId ) ) {
       throw new SchedulerException( Messages.getInstance().getString( "QuartzScheduler.ERROR_0003_ACTION_IS_NULL" ) ); //$NON-NLS-1$
@@ -205,7 +202,7 @@ public class QuartzScheduler implements IScheduler {
     }
 
     jobParams.put( RESERVEDMAPKEY_ACTIONID, actionId );
-    Job ret = createJob( jobName, jobParams, trigger, outputStreamProvider );
+    Job ret = createJob( curUser, jobName, jobParams, trigger, outputStreamProvider );
     ret.setSchedulableClass( "" ); //$NON-NLS-1$
     return ret;
   }
@@ -222,7 +219,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
     			    .withSchedule(cronSchedule(cronScheule).withMisfireHandlingInstructionFireAndProceed())
     			    .forJob( jobId.toString(), jobId.getUserName())
     			    .build();
-      } catch ( ParseException e ) {
+      } catch ( Exception e ) {
         throw new SchedulerException( Messages.getInstance().getString(
             "QuartzScheduler.ERROR_0001_FAILED_TO_SCHEDULE_JOB", jobId.getJobName() ), e ); //$NON-NLS-1$
       }
@@ -271,10 +268,9 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
   }
 
   /** {@inheritDoc} */
-  protected Job createJob( String jobName, Map<String, Serializable> jobParams, IJobTrigger trigger,
+  protected Job createJob( String curUser, String jobName, Map<String, Serializable> jobParams, IJobTrigger trigger,
       IBackgroundExecutionStreamProvider outputStreamProvider ) throws SchedulerException {
 
-    String curUser = getCurrentUser();
 
     QuartzJobKey jobId = new QuartzJobKey( jobName, curUser );
 
@@ -429,7 +425,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
         if ( jobDetail != null ) {
           JobDataMap jobDataMap = jobDetail.getJobDataMap();
           if ( jobDataMap != null ) {
-            Map<String, Serializable> wrappedMap = toSerializableValueMap(jobDataMap.getWrappedMap());
+            Map<String, Serializable> wrappedMap = GeneralUtils.toSerializableValueMap(jobDataMap.getWrappedMap());
             job.setJobParams( wrappedMap );
           }
         }
@@ -446,14 +442,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
     return null;
   }
 
-  private Map<String, Serializable> toSerializableValueMap(
-		Map<String, Object> wrappedMap) {
-	  Map<String, Serializable> map = new HashMap<String, Serializable>();
-	  for (String key: wrappedMap.keySet()) {
-		  map.put(key, (Serializable)wrappedMap.get(key));
-	  }
-	return map;
-}
+
 
 /** {@inheritDoc} */
   @SuppressWarnings( "unchecked" )
@@ -582,7 +571,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
   public void pauseJob( String jobId ) throws SchedulerException {
     try {
       Scheduler scheduler = getQuartzScheduler();
-      scheduler.pauseJob( jobId, QuartzJobKey.parse( jobId ).getUserName() );
+      scheduler.pauseJob( new JobKey(jobId, QuartzJobKey.parse( jobId ).getUserName()) );
     } catch ( org.quartz.SchedulerException e ) {
       throw new SchedulerException( Messages.getInstance()
           .getString( "QuartzScheduler.ERROR_0005_FAILED_TO_PAUSE_JOBS" ), e ); //$NON-NLS-1$
@@ -593,7 +582,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
   public void removeJob( String jobId ) throws SchedulerException {
     try {
       Scheduler scheduler = getQuartzScheduler();
-      scheduler.deleteJob( jobId, QuartzJobKey.parse( jobId ).getUserName() );
+      scheduler.deleteJob( new JobKey(jobId, QuartzJobKey.parse( jobId ).getUserName()) );
     } catch ( org.quartz.SchedulerException e ) {
       throw new SchedulerException( Messages.getInstance()
           .getString( "QuartzScheduler.ERROR_0005_FAILED_TO_PAUSE_JOBS" ), e ); //$NON-NLS-1$
@@ -613,7 +602,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
   public void resumeJob( String jobId ) throws SchedulerException {
     try {
       Scheduler scheduler = getQuartzScheduler();
-      scheduler.resumeJob( jobId, QuartzJobKey.parse( jobId ).getUserName() );
+      scheduler.resumeJob( new JobKey(jobId, QuartzJobKey.parse( jobId ).getUserName()) );
     } catch ( org.quartz.SchedulerException e ) {
       throw new SchedulerException( Messages.getInstance().getString(
           "QuartzScheduler.ERROR_0005_FAILED_TO_RESUME_JOBS" ), e ); //$NON-NLS-1$
@@ -638,17 +627,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
 
   }
 
-  /**
-   * @return
-   */
-  protected String getCurrentUser() {
-    IPentahoSession session = PentahoSessionHolder.getSession();
-    if ( session == null ) {
-      return null;
-    }
-    Principal p = SecurityHelper.getInstance().getAuthentication();
-    return ( p == null ) ? null : p.getName();
-  }
+
 
   public static ComplexJobTrigger createComplexTrigger( String cronExpression ) {
     ComplexJobTrigger complexJobTrigger = new ComplexJobTrigger();
