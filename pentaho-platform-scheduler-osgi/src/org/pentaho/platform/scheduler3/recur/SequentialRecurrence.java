@@ -19,7 +19,7 @@ package org.pentaho.platform.scheduler3.recur;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.api.scheduler2.recur.ITimeRecurrence;
+import org.pentaho.platform.api.scheduler3.recur.ITimeRecurrence;
 
 /**
  * Used to specify a sequence of dates or times from first value through and including the last value. The sequence may

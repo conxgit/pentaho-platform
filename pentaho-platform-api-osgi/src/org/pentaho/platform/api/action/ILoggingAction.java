@@ -17,7 +17,8 @@
 
 package org.pentaho.platform.api.action;
 
-import org.apache.commons.logging.Log;
+import org.osgi.service.log.LogService;
+
 
 /**
  * The interface for an Action that wants to be provided with a logger.
@@ -34,6 +35,6 @@ public interface ILoggingAction extends IAction {
    * @param log
    *          the commons logging log that the Action can write to
    */
-  public void setLogger( Log log );
+  public void setLogger( LogService log );
 
 }

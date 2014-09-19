@@ -1,0 +1,11 @@
+Bundle-Version: 1.0.0.${tstamp}
+Private-Package:  \
+	org.pentaho.platform.scheduler3.osgi,\
+	org.pentaho.platform.scheduler3.blockout,\
+	org.pentaho.platform.scheduler3.email,\
+	org.pentaho.platform.scheduler3.messsages,\
+	org.pentaho.platform.scheduler3.quartz,\
+	org.pentaho.platform.scheduler3.recur,\
+	org.pentaho.platform.scheduler3.versionchecker,\
+	org.pentaho.platform.scheduler3.ws
+Bundle-Activator: org.pentaho.platform.scheduler3.osgi.Activator

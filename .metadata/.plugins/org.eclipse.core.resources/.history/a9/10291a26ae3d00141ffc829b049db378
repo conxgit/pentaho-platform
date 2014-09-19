@@ -1,0 +1,5 @@
+package org.pentaho.platform.api.mt;
+
+public class ITenant {
+
+}

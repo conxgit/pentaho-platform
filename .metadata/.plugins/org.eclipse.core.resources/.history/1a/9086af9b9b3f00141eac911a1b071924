@@ -1,0 +1,7 @@
+Bundle-Version: 1.0.0.${tstamp}
+Service-Component:  \
+	*
+Export-Package:  \
+	org.pentaho.platform.api.scheduler3,\
+	org.pentaho.platform.api.scheduler3.recur,\
+	org.pentaho.platform.api.scheduler3.wrappers

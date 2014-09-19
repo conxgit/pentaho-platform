@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<repository increment='1410731846193' name='Local' xmlns='http://www.osgi.org/xmlns/repository/v1.0.0'>
+<repository increment='1411073988675' name='Local' xmlns='http://www.osgi.org/xmlns/repository/v1.0.0'>
   <resource>
     <capability namespace='osgi.identity'>
       <attribute name='osgi.identity' value='org.apache.commons.collections'/>
@@ -131,6 +131,124 @@
   </resource>
   <resource>
     <capability namespace='osgi.identity'>
+      <attribute name='osgi.identity' value='org.apache.commons.beanutils'/>
+      <attribute name='type' value='osgi.bundle'/>
+      <attribute name='version' type='Version' value='1.8.0'/>
+    </capability>
+    <capability namespace='osgi.content'>
+      <attribute name='osgi.content' value='13543939b86e3bb8339019d6acc08ecb04e4b095a82baf984e505b3afb54742a'/>
+      <attribute name='url' value='org.apache.commons.beanutils/org.apache.commons.beanutils-1.8.0.jar'/>
+      <attribute name='size' type='Long' value='231320'/>
+      <attribute name='mime' value='application/vnd.osgi.bundle'/>
+    </capability>
+    <capability namespace='osgi.wiring.bundle'>
+      <attribute name='osgi.wiring.bundle' value='org.apache.commons.beanutils'/>
+      <attribute name='bundle-version' type='Version' value='1.8.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.host'>
+      <attribute name='osgi.wiring.host' value='org.apache.commons.beanutils'/>
+      <attribute name='bundle-version' type='Version' value='1.8.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.beanutils.expression'/>
+      <attribute name='version' type='Version' value='1.8.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.beanutils'/>
+      <attribute name='bundle-version' type='Version' value='1.8.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.beanutils'/>
+      <attribute name='version' type='Version' value='1.8.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.beanutils'/>
+      <attribute name='bundle-version' type='Version' value='1.8.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.beanutils.locale.converters'/>
+      <attribute name='version' type='Version' value='1.8.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.beanutils'/>
+      <attribute name='bundle-version' type='Version' value='1.8.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.beanutils.converters'/>
+      <attribute name='version' type='Version' value='1.8.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.beanutils'/>
+      <attribute name='bundle-version' type='Version' value='1.8.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.beanutils.locale'/>
+      <attribute name='version' type='Version' value='1.8.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.beanutils'/>
+      <attribute name='bundle-version' type='Version' value='1.8.0'/>
+    </capability>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.apache.commons.beanutils)(version&gt;=1.8.0))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.apache.commons.beanutils.converters)(version&gt;=1.8.0))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.apache.commons.beanutils.expression)(version&gt;=1.8.0))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.apache.commons.beanutils.locale)(version&gt;=1.8.0))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.apache.commons.beanutils.locale.converters)(version&gt;=1.8.0))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=org.apache.commons.collections.comparators)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=org.apache.commons.collections.keyvalue)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=org.apache.commons.collections.list)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=org.apache.commons.collections.set)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=org.apache.commons.logging)'/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace='osgi.identity'>
+      <attribute name='osgi.identity' value='slf4j.simple'/>
+      <attribute name='type' value='osgi.fragment'/>
+      <attribute name='version' type='Version' value='1.7.5'/>
+    </capability>
+    <capability namespace='osgi.content'>
+      <attribute name='osgi.content' value='6d06eedca4768119b2c6ac5adf97e7b5ad57a03d6578d69e734fa083c957dc06'/>
+      <attribute name='url' value='slf4j.simple/slf4j.simple-1.7.5.jar'/>
+      <attribute name='size' type='Long' value='10680'/>
+      <attribute name='mime' value='application/vnd.osgi.bundle'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.slf4j.impl'/>
+      <attribute name='version' type='Version' value='1.7.5'/>
+      <attribute name='bundle-symbolic-name' value='slf4j.simple'/>
+      <attribute name='bundle-version' type='Version' value='1.7.5'/>
+    </capability>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.slf4j)(version&gt;=1.7.5))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.slf4j.spi)(version&gt;=1.7.5))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.slf4j.helpers)(version&gt;=1.7.5))'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.bundle'>
+      <directive name='filter' value='(osgi.wiring.bundle=slf4j.api)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.host'>
+      <directive name='filter' value='(&amp;(osgi.wiring.host=slf4j.api)(bundle-version&gt;=0.0.0))'/>
+    </requirement>
+    <requirement namespace='osgi.ee'>
+      <directive name='filter' value='(&amp;(osgi.ee=JavaSE)(version=1.3))'/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace='osgi.identity'>
       <attribute name='osgi.identity' value='org.apache.commons.logging'/>
       <attribute name='type' value='osgi.bundle'/>
       <attribute name='version' type='Version' value='1.2.0'/>
@@ -177,6 +295,63 @@
       <directive name='filter' value='(&amp;(osgi.wiring.package=org.apache.log4j)(version&gt;=1.2.15)(!(version&gt;=2.0.0)))'/>
       <directive name='resolution' value='optional'/>
     </requirement>
+  </resource>
+  <resource>
+    <capability namespace='osgi.identity'>
+      <attribute name='osgi.identity' value='org.apache.commons.io'/>
+      <attribute name='type' value='osgi.bundle'/>
+      <attribute name='version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.content'>
+      <attribute name='osgi.content' value='88dff860b1983f9640979196a4dfd9ae6cddd4a88119c81ce3a61de2f28cc927'/>
+      <attribute name='url' value='org.apache.commons.io/org.apache.commons.io-2.1.0.jar'/>
+      <attribute name='size' type='Long' value='163151'/>
+      <attribute name='mime' value='application/vnd.osgi.bundle'/>
+    </capability>
+    <capability namespace='osgi.wiring.bundle'>
+      <attribute name='osgi.wiring.bundle' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.host'>
+      <attribute name='osgi.wiring.host' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.io.output'/>
+      <attribute name='version' type='Version' value='2.1.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.io.monitor'/>
+      <attribute name='version' type='Version' value='2.1.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.io.filefilter'/>
+      <attribute name='version' type='Version' value='2.1.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.io.comparator'/>
+      <attribute name='version' type='Version' value='2.1.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.io.input'/>
+      <attribute name='version' type='Version' value='2.1.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.apache.commons.io'/>
+      <attribute name='version' type='Version' value='2.1.0'/>
+      <attribute name='bundle-symbolic-name' value='org.apache.commons.io'/>
+      <attribute name='bundle-version' type='Version' value='2.1.0'/>
+    </capability>
   </resource>
   <resource>
     <capability namespace='osgi.identity'>
@@ -662,6 +837,384 @@
     </requirement>
     <requirement namespace='osgi.ee'>
       <directive name='filter' value='(&amp;(osgi.ee=JavaSE)(version=1.6))'/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace='osgi.identity'>
+      <attribute name='osgi.identity' value='slf4j.api'/>
+      <attribute name='type' value='osgi.bundle'/>
+      <attribute name='version' type='Version' value='1.7.5'/>
+    </capability>
+    <capability namespace='osgi.content'>
+      <attribute name='osgi.content' value='fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91'/>
+      <attribute name='url' value='slf4j.api/slf4j.api-1.7.5.jar'/>
+      <attribute name='size' type='Long' value='26084'/>
+      <attribute name='mime' value='application/vnd.osgi.bundle'/>
+    </capability>
+    <capability namespace='osgi.wiring.bundle'>
+      <attribute name='osgi.wiring.bundle' value='slf4j.api'/>
+      <attribute name='bundle-version' type='Version' value='1.7.5'/>
+    </capability>
+    <capability namespace='osgi.wiring.host'>
+      <attribute name='osgi.wiring.host' value='slf4j.api'/>
+      <attribute name='bundle-version' type='Version' value='1.7.5'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.slf4j'/>
+      <attribute name='version' type='Version' value='1.7.5'/>
+      <attribute name='bundle-symbolic-name' value='slf4j.api'/>
+      <attribute name='bundle-version' type='Version' value='1.7.5'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.slf4j.spi'/>
+      <attribute name='version' type='Version' value='1.7.5'/>
+      <attribute name='bundle-symbolic-name' value='slf4j.api'/>
+      <attribute name='bundle-version' type='Version' value='1.7.5'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='org.slf4j.helpers'/>
+      <attribute name='version' type='Version' value='1.7.5'/>
+      <attribute name='bundle-symbolic-name' value='slf4j.api'/>
+      <attribute name='bundle-version' type='Version' value='1.7.5'/>
+    </capability>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.slf4j.impl)(version&gt;=1.6.0))'/>
+    </requirement>
+    <requirement namespace='osgi.ee'>
+      <directive name='filter' value='(&amp;(osgi.ee=JavaSE)(version=1.3))'/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace='osgi.identity'>
+      <attribute name='osgi.identity' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='type' value='osgi.bundle'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.content'>
+      <attribute name='osgi.content' value='a4877f9d0312e3b62412383b6c4afa3669d513bec84e97368725d18e80051b57'/>
+      <attribute name='url' value='com.springsource.com.mchange.v2.c3p0/com.springsource.com.mchange.v2.c3p0-0.9.1.jar'/>
+      <attribute name='size' type='Long' value='617643'/>
+      <attribute name='mime' value='application/vnd.osgi.bundle'/>
+    </capability>
+    <capability namespace='osgi.wiring.bundle'>
+      <attribute name='osgi.wiring.bundle' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.host'>
+      <attribute name='osgi.wiring.host' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.lang'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.util'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1.db'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1.db.sql'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1.identicator'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1.io'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1.lang'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1.util'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v1.xml'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='org.w3c.dom'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.async'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.log'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.beans'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.log'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.c3p0.impl,javax.naming,javax.sql'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.cfg'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='org.w3c.dom'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.filter'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='javax.sql'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.impl'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.async,com.mchange.v2.c3p0,com.mchange.v2.c3p0.stmt,com.mchange.v2.resourcepool,javax.naming,javax.sql'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.jboss'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='javax.naming'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.management'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.c3p0,javax.management'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.mbean'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='javax.naming'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.stmt'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.async,com.mchange.v2.log,com.mchange.v2.util,javax.sql'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.subst'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.c3p0.util'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.c3p0,javax.sql'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.cfg'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.log'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.cfg.junit'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.coalesce'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.codegen'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.codegen.bean'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.codegen,com.mchange.v2.ser,org.w3c.dom'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.codegen.intfc'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.codegen'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.debug'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.encounter'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.holders'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.io'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.lang'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.log'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.log.jdk14logging'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.log'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.log.log4j'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.log,org.apache.log4j'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.management'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.naming'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.ser,javax.naming'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.resourcepool'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+      <directive name='uses' value='com.mchange.v2.async,com.mchange.v2.log'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.ser'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.sql'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.sql.filter'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <capability namespace='osgi.wiring.package'>
+      <attribute name='osgi.wiring.package' value='com.mchange.v2.util'/>
+      <attribute name='version' type='Version' value='0.9.1.2'/>
+      <attribute name='bundle-symbolic-name' value='com.springsource.com.mchange.v2.c3p0'/>
+      <attribute name='bundle-version' type='Version' value='0.9.1.2'/>
+    </capability>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=javax.management)'/>
+      <directive name='resolution' value='optional'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=javax.naming)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=javax.naming.spi)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=javax.sql)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=javax.xml.parsers)'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(&amp;(osgi.wiring.package=org.apache.log4j)(version&gt;=1.2.15)(!(version&gt;=1.3.0)))'/>
+      <directive name='resolution' value='optional'/>
+    </requirement>
+    <requirement namespace='osgi.wiring.package'>
+      <directive name='filter' value='(osgi.wiring.package=org.w3c.dom)'/>
     </requirement>
   </resource>
 </repository>

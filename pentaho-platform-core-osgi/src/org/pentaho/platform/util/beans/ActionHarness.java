@@ -17,8 +17,7 @@
 
 package org.pentaho.platform.util.beans;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.osgi.service.log.LogService;
 import org.pentaho.platform.api.action.IAction;
 import org.pentaho.platform.api.action.IVarArgsAction;
 import org.pentaho.platform.util.messages.Messages;
@@ -38,7 +37,7 @@ public class ActionHarness extends BeanUtil {
 
   private VarArgsWrapperCallback varArgsCallback;
 
-  private static final Log logger = LogFactory.getLog( ActionHarness.class );
+  private static LogService logger;
 
   public ActionHarness( IAction actionBean ) {
     super( actionBean );
@@ -108,10 +107,8 @@ public class ActionHarness extends BeanUtil {
     @Override
     public void propertyNotWritable( Object bean, String propertyName ) throws Exception {
       String beanType = ( bean != null ) ? bean.getClass().getName() : "[ClassNameNotAvailable]"; //$NON-NLS-1$
-      if ( logger.isDebugEnabled() ) {
-        logger.debug( Messages.getInstance().getString( "ActionHarness.WARN_NO_METHOD_FOR_PROPERTY", //$NON-NLS-1$
+      logger.log(LogService.LOG_WARNING, Messages.getInstance().getString( "ActionHarness.WARN_NO_METHOD_FOR_PROPERTY", //$NON-NLS-1$
             propertyName, beanType ) );
-      }
     }
   }
 }

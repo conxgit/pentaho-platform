@@ -33,27 +33,21 @@ import org.pentaho.platform.api.action.IAction;
 import org.pentaho.platform.api.action.IActionPluginManager;
 import org.pentaho.platform.api.action.IStreamingAction;
 import org.pentaho.platform.api.action.IVarArgsAction;
-import org.pentaho.platform.api.engine.IPluginManager;
-import org.pentaho.platform.api.engine.PluginBeanException;
 import org.pentaho.platform.api.repository2.unified.ISourcesStreamEvents;
 import org.pentaho.platform.api.repository2.unified.IStreamListener;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.data.simple.SimpleRepositoryFileData;
-import org.pentaho.platform.api.scheduler2.IBackgroundExecutionStreamProvider;
-import org.pentaho.platform.api.scheduler2.IBlockoutManager;
-import org.pentaho.platform.api.scheduler2.IJobTrigger;
-import org.pentaho.platform.api.scheduler2.IScheduler;
-import org.pentaho.platform.api.scheduler2.SimpleJobTrigger;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.security.SecurityHelper;
+import org.pentaho.platform.api.scheduler3.IBackgroundExecutionStreamProvider;
+import org.pentaho.platform.api.scheduler3.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IJobTrigger;
+import org.pentaho.platform.api.scheduler3.IScheduler;
+import org.pentaho.platform.api.scheduler3.SimpleJobTrigger;
 import org.pentaho.platform.engine.services.solution.ActionSequenceCompatibilityFormatter;
 import org.pentaho.platform.scheduler3.blockout.BlockoutAction;
-import org.pentaho.platform.scheduler3.email.Emailer;
 import org.pentaho.platform.scheduler3.messsages.Messages;
 import org.pentaho.platform.util.beans.ActionHarness;
 import org.pentaho.platform.util.messages.LocaleHelper;
-import org.pentaho.platform.util.web.MimeHelper;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -91,13 +85,6 @@ public class ActionAdapterQuartzJob implements Job {
     IAction action = pluginManager.getActionPluginByActionId( actionId ).newInstance();
     
     return action;
-
-    // we have failed to locate the class for the actionClass
-    // and we're giving up waiting for it to become available/registered
-    // which can typically happen at system startup
-    throw new LoggingJobExecutionException( Messages.getInstance().getErrorString(
-        "ActionAdapterQuartzJob.ERROR_0002_FAILED_TO_CREATE_ACTION", //$NON-NLS-1$
-        StringUtils.isEmpty( actionId ) ? actionClass : actionId ) );
   }
 
   @SuppressWarnings( "unchecked" )
@@ -178,7 +165,7 @@ public class ActionAdapterQuartzJob implements Job {
         OutputStream stream = null;
         
         if ( streamProvider != null ) {
-          actionParams.remove( "inputStream" );
+ /*         actionParams.remove( "inputStream" );
           if ( actionBean instanceof IStreamingAction ) {
             streamProvider.setStreamingAction( (IStreamingAction) actionBean );
           }
@@ -210,7 +197,7 @@ public class ActionAdapterQuartzJob implements Job {
           actionParams.put( "outputStream", stream );
           // The lineage_id is only useful for the metadata and not needed at this level see PDI-10171
           actionParams.remove( QuartzScheduler.RESERVEDMAPKEY_LINEAGE_ID );
-          actionHarness.setValues( actionParams );
+          actionHarness.setValues( actionParams );*/
         }
 
         actionBean.execute();
@@ -233,7 +220,7 @@ public class ActionAdapterQuartzJob implements Job {
     };
 
     boolean requiresUpdate = false;
-    if ( ( actionUser == null ) || ( actionUser.equals( "system session" ) ) ) { //$NON-NLS-1$
+ /*   if ( ( actionUser == null ) || ( actionUser.equals( "system session" ) ) ) { //$NON-NLS-1$
       // For now, don't try to run quartz jobs as authenticated if the user
       // that created the job is a system user. See PPP-2350
       requiresUpdate = SecurityHelper.getInstance().runAsAnonymous( actionBeanRunner );
@@ -265,11 +252,11 @@ public class ActionAdapterQuartzJob implements Job {
           throw new Exception( t );
         }
       }
-    }
+    }*/
 
     scheduler.fireJobCompleted( actionBean, actionUser, params, streamProvider );
 
-    if ( requiresUpdate ) {
+ /*   if ( requiresUpdate ) {
       log.log(LogService.LOG_WARNING, "Output path for job: " + context.getJobDetail().getName() + " has changed. Job requires update" );
       try {
         final IJobTrigger trigger = scheduler.getJob( context.getJobDetail().getName() ).getJobTrigger();
@@ -294,7 +281,7 @@ public class ActionAdapterQuartzJob implements Job {
       } catch ( Exception e ) {
         log.log(LogService.LOG_ERROR, e.getMessage(), e );
       }
-    }
+    }*/
 
       log.log(LogService.LOG_DEBUG,  MessageFormat.format(
           "Scheduling system successfully invoked action {0} as user {1} with params [ {2} ]", actionBean //$NON-NLS-1$
@@ -302,7 +289,7 @@ public class ActionAdapterQuartzJob implements Job {
   }
 
   private void sendEmail( Map<String, Object> actionParams, Map<String, Serializable> params, String filePath ) {
-    try {
+/*    try {
       IUnifiedRepository repo = PentahoSystem.get( IUnifiedRepository.class );
       RepositoryFile sourceFile = repo.getFile( filePath );
       // add metadata
@@ -382,7 +369,7 @@ public class ActionAdapterQuartzJob implements Job {
       emailer.send();
     } catch ( Exception e ) {
       log.log(LogService.LOG_WARNING, e.getMessage(), e );
-    }      
+    }      */
   }
 
   class LoggingJobExecutionException extends JobExecutionException {

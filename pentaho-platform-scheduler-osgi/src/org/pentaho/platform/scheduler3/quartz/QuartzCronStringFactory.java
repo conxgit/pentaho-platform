@@ -19,9 +19,9 @@ package org.pentaho.platform.scheduler3.quartz;
 
 import java.util.List;
 
-import org.pentaho.platform.api.scheduler2.ComplexJobTrigger;
-import org.pentaho.platform.api.scheduler2.recur.ITimeRecurrence;
-import org.pentaho.platform.api.scheduler2.wrappers.ITimeWrapper;
+import org.pentaho.platform.api.scheduler3.ComplexJobTrigger;
+import org.pentaho.platform.api.scheduler3.recur.ITimeRecurrence;
+import org.pentaho.platform.api.scheduler3.wrappers.ITimeWrapper;
 import org.pentaho.platform.scheduler3.recur.IncrementalRecurrence;
 import org.pentaho.platform.scheduler3.recur.QualifiedDayOfMonth;
 import org.pentaho.platform.scheduler3.recur.QualifiedDayOfWeek;

@@ -18,7 +18,7 @@ import java.util.Map;
 
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.api.action.IVarArgsAction;
-import org.pentaho.platform.api.scheduler2.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IBlockoutManager;
 
 /**
  * @author wseyler This is the job that executes when the a block out trigger fires. This job essentially does nothing

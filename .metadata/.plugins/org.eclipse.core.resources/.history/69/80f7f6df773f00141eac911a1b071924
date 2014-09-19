@@ -1,0 +1,6 @@
+Bundle-Version: 0.0.0.${tstamp}
+Private-Package:  \
+	pentaho-platform-scheduler-osgi-itests,\
+	org.pentaho.platform.scheduler3.quartz.itests
+Test-Cases:  \
+	${classes;CONCRETE;EXTENDS;junit.framework.TestCase}

@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.api.scheduler2.recur.ITimeRecurrence;
+import org.pentaho.platform.api.scheduler3.recur.ITimeRecurrence;
 
 /**
  * Used to specify a list of recurrences representing dates or times. The list may represent years, or days of month or

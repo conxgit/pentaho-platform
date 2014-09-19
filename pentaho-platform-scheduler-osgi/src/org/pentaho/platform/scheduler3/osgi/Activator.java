@@ -4,7 +4,7 @@ import org.apache.felix.dm.DependencyActivatorBase;
 import org.apache.felix.dm.DependencyManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
-import org.pentaho.platform.api.scheduler2.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IBlockoutManager;
 import org.pentaho.platform.scheduler3.blockout.PentahoBlockoutManager;
 
 public class Activator extends DependencyActivatorBase {

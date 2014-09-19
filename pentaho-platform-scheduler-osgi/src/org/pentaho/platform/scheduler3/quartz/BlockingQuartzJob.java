@@ -18,7 +18,7 @@
 package org.pentaho.platform.scheduler3.quartz;
 
 import org.osgi.service.log.LogService;
-import org.pentaho.platform.api.scheduler2.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IBlockoutManager;
 import org.pentaho.platform.scheduler3.blockout.BlockoutAction;
 import org.pentaho.platform.scheduler3.blockout.PentahoBlockoutManager;
 import org.quartz.Job;
@@ -41,12 +41,12 @@ public class BlockingQuartzJob implements Job {
         createUnderlyingJob().execute( jobExecutionContext );
       } else {
         log.log(LogService.LOG_WARNING,
-            "Job '" + jobExecutionContext.getJobDetail().getName()
+            "Job '" + jobExecutionContext.getJobDetail().getKey().getName()
                 + "' attempted to run during a blockout period.  This job was not executed" );
       }
     } catch ( SchedulerException e ) {
       log.log(LogService.LOG_WARNING,
-          "Got Exception retrieving the Blockout Manager for job '" + jobExecutionContext.getJobDetail().getName()
+          "Got Exception retrieving the Blockout Manager for job '" + jobExecutionContext.getJobDetail().getKey().getName()
               + "'. Executing the underlying job anyway", e );
       createUnderlyingJob().execute( jobExecutionContext );
     }

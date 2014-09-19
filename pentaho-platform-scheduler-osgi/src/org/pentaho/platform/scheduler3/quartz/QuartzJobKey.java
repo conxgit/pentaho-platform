@@ -20,7 +20,7 @@ package org.pentaho.platform.scheduler3.quartz;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
-import org.pentaho.platform.api.scheduler2.SchedulerException;
+import org.pentaho.platform.api.scheduler3.SchedulerException;
 import org.pentaho.platform.scheduler3.messsages.Messages;
 
 /**

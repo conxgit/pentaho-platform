@@ -33,20 +33,20 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.api.action.IAction;
-import org.pentaho.platform.api.scheduler2.ComplexJobTrigger;
-import org.pentaho.platform.api.scheduler2.IBackgroundExecutionStreamProvider;
-import org.pentaho.platform.api.scheduler2.IJobFilter;
-import org.pentaho.platform.api.scheduler2.IJobResult;
-import org.pentaho.platform.api.scheduler2.IJobTrigger;
-import org.pentaho.platform.api.scheduler2.IScheduleSubject;
-import org.pentaho.platform.api.scheduler2.IScheduler;
-import org.pentaho.platform.api.scheduler2.ISchedulerListener;
-import org.pentaho.platform.api.scheduler2.Job;
-import org.pentaho.platform.api.scheduler2.Job.JobState;
-import org.pentaho.platform.api.scheduler2.JobTrigger;
-import org.pentaho.platform.api.scheduler2.SchedulerException;
-import org.pentaho.platform.api.scheduler2.SimpleJobTrigger;
-import org.pentaho.platform.api.scheduler2.recur.ITimeRecurrence;
+import org.pentaho.platform.api.scheduler3.ComplexJobTrigger;
+import org.pentaho.platform.api.scheduler3.IBackgroundExecutionStreamProvider;
+import org.pentaho.platform.api.scheduler3.IJobFilter;
+import org.pentaho.platform.api.scheduler3.IJobResult;
+import org.pentaho.platform.api.scheduler3.IJobTrigger;
+import org.pentaho.platform.api.scheduler3.IScheduleSubject;
+import org.pentaho.platform.api.scheduler3.IScheduler;
+import org.pentaho.platform.api.scheduler3.ISchedulerListener;
+import org.pentaho.platform.api.scheduler3.Job;
+import org.pentaho.platform.api.scheduler3.JobTrigger;
+import org.pentaho.platform.api.scheduler3.SchedulerException;
+import org.pentaho.platform.api.scheduler3.SimpleJobTrigger;
+import org.pentaho.platform.api.scheduler3.Job.JobState;
+import org.pentaho.platform.api.scheduler3.recur.ITimeRecurrence;
 import org.pentaho.platform.scheduler3.messsages.Messages;
 import org.pentaho.platform.scheduler3.recur.IncrementalRecurrence;
 import org.pentaho.platform.scheduler3.recur.QualifiedDayOfMonth;
@@ -460,7 +460,7 @@ public static Trigger createQuartzTrigger( IJobTrigger jobTrigger, QuartzJobKey 
               job.setUserName( jobDetail.getKey().getGroup() );
               JobDataMap jobDataMap = jobDetail.getJobDataMap();
               if ( jobDataMap != null ) {
-                Map<String, Serializable> wrappedMap = toSerializableValueMap(jobDataMap.getWrappedMap());
+                Map<String, Serializable> wrappedMap = GeneralUtils.toSerializableValueMap(jobDataMap.getWrappedMap());
                 job.setJobParams( wrappedMap );
               }
             }

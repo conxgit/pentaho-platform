@@ -20,8 +20,7 @@ package org.pentaho.platform.util.beans;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.osgi.service.log.LogService;
 import org.pentaho.platform.util.messages.Messages;
 
 import java.beans.PropertyDescriptor;
@@ -43,7 +42,7 @@ import java.util.Map;
  */
 public class BeanUtil {
 
-  private static final Log logger = LogFactory.getLog( BeanUtil.class );
+  private static LogService logger;
 
   private PropertyUtilsBean propUtil = new PropertyUtilsBean();
 
@@ -81,9 +80,7 @@ public class BeanUtil {
 
   public Object getValue( String propertyName ) throws IllegalAccessException, InvocationTargetException,
     NoSuchMethodException {
-    if ( logger.isTraceEnabled() ) {
-      logger.trace( MessageFormat.format( "getting property \"{0}\" from bean \"{1}\"", propertyName, bean ) ); //$NON-NLS-1$
-    }
+    logger.log(LogService.LOG_DEBUG, MessageFormat.format( "getting property \"{0}\" from bean \"{1}\"", propertyName, bean ) ); //$NON-NLS-1$
     return propUtil.getSimpleProperty( bean, propertyName );
   }
 
@@ -207,17 +204,15 @@ public class BeanUtil {
    * @see PropertyNameFormatter
    */
   public void setValue( String propertyName, Object value, ValueSetErrorCallback callback,
-      PropertyNameFormatter... formatters ) throws Exception {
-    if ( logger.isTraceEnabled() ) {
-      logger.trace( MessageFormat.format( "setting property \"{0}\" on bean \"{1}\"", propertyName, bean ) ); //$NON-NLS-1$
-    }
+     PropertyNameFormatter... formatters ) throws Exception {
+	 logger.log(LogService.LOG_DEBUG, MessageFormat.format( "setting property \"{0}\" on bean \"{1}\"", propertyName, bean ) ); //$NON-NLS-1$
 
     if ( value == null ) {
       // we are ignoring (not setting) null values because we could wind up with a class cast / converter
       // exception downstream which would imply an error condition, when an error is typically not what
       // we want here. If we did let this null continue on, we would have indeterminate behavior for nulls,
       // i.e. sometimes they would work, sometimes they would trigger an error
-      logger.info( MessageFormat.format(
+      logger.log(LogService.LOG_WARNING, MessageFormat.format(
           "value to set is null, skipping setting of \"{0}\" property on bean \"{1}\"", propertyName, bean ) ); //$NON-NLS-1$
       return;
     }

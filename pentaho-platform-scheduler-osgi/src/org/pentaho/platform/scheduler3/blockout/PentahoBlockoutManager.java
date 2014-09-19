@@ -20,12 +20,12 @@ package org.pentaho.platform.scheduler3.blockout;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.api.scheduler2.IBlockoutManager;
-import org.pentaho.platform.api.scheduler2.IJobFilter;
-import org.pentaho.platform.api.scheduler2.IJobTrigger;
-import org.pentaho.platform.api.scheduler2.IScheduler;
-import org.pentaho.platform.api.scheduler2.Job;
-import org.pentaho.platform.api.scheduler2.SchedulerException;
+import org.pentaho.platform.api.scheduler3.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IJobFilter;
+import org.pentaho.platform.api.scheduler3.IJobTrigger;
+import org.pentaho.platform.api.scheduler3.IScheduler;
+import org.pentaho.platform.api.scheduler3.Job;
+import org.pentaho.platform.api.scheduler3.SchedulerException;
 
 public class PentahoBlockoutManager implements IBlockoutManager {
 

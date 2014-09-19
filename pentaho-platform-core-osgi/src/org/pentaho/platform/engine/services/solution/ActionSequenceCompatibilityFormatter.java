@@ -19,8 +19,7 @@
 package org.pentaho.platform.engine.services.solution;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.osgi.service.log.LogService;
 import org.pentaho.platform.engine.services.messages.Messages;
 import org.pentaho.platform.util.beans.PropertyNameFormatter;
 
@@ -37,7 +36,7 @@ import org.pentaho.platform.util.beans.PropertyNameFormatter;
  */
 public class ActionSequenceCompatibilityFormatter implements PropertyNameFormatter {
 
-  Log logger = LogFactory.getLog( ActionSequenceCompatibilityFormatter.class );
+  LogService logger;
 
   public String format( String name ) {
     return compatibilityToCamelCase( name );
@@ -54,7 +53,7 @@ public class ActionSequenceCompatibilityFormatter implements PropertyNameFormatt
           camelCaseName += parts[i];
         }
       }
-      logger.warn( Messages.getInstance().getString(
+      logger.log(LogService.LOG_DEBUG, Messages.getInstance().getString(
           "ActionSequenceCompatibilityFormatter.WARN_USING_IO_COMPATIBILITY_MODE", camelCaseName, name ) ); //$NON-NLS-1$
       return camelCaseName;
     }

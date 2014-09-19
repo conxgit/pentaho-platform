@@ -10,3 +10,16 @@
 1410731420299	Rename package 'org.pentaho.platform.scheduler2.recur'
 1410731437168	Rename package 'org.pentaho.platform.scheduler2.versionchecker'
 1410731450751	Rename package 'org.pentaho.platform.scheduler2.ws'
+1410883877227	Delete element
+1410886550586	Delete elements
+1410886711301	Delete element
+1410886788643	Delete element
+1410886845479	Delete elements
+1410886913956	Delete element
+1410896675401	Rename package 'org.pentaho.platform.api.scheduler2.wrappers'
+1410896688942	Rename package 'org.pentaho.platform.api.scheduler2.recur'
+1410896703298	Rename package 'org.pentaho.platform.api.scheduler2'
+1411065170430	Copy compilation unit
+1411065231239	Rename type 'EmbeddableQuartzScheduler'
+1411089679578	Delete element
+1411089829247	Delete element
