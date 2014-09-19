@@ -17,6 +17,9 @@
 
 package org.pentaho.platform.scheduler3.messsages;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.pentaho.platform.util.messages.MessagesBase;
 
 public class Messages extends MessagesBase {
@@ -32,4 +35,10 @@ public class Messages extends MessagesBase {
   public static Messages getInstance() {
     return instance;
   }
+  
+  public ResourceBundle getBundle() {
+	    return ResourceBundle.getBundle( BUNDLE_NAME, Locale.getDefault(), Messages.class.getClassLoader());
+  }
 }
+
+

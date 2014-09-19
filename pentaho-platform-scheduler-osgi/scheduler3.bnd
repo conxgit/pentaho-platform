@@ -13,4 +13,5 @@ Private-Package:  \
 	org.pentaho.platform.api.scheduler3.wrappers
 Bundle-Activator: org.pentaho.platform.scheduler3.osgi.Activator
 Export-Package:  \
+	org.pentaho.platform.api.scheduler3,\
 	org.pentaho.platform.scheduler3.quartz
