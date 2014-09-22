@@ -22,6 +22,7 @@ import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.util.messages.Messages;
+import org.pentaho.platform.util.osgi.OSGUtilSupport;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -40,9 +41,7 @@ import java.util.Map;
  * 
  * @see ActionHarness
  */
-public class BeanUtil {
-
-  private static LogService logger;
+public class BeanUtil extends OSGUtilSupport{
 
   private PropertyUtilsBean propUtil = new PropertyUtilsBean();
 
@@ -63,6 +62,7 @@ public class BeanUtil {
    *          the bean on which to operate
    */
   public BeanUtil( final Object targetBean ) {
+	super.init();
     this.bean = targetBean;
     //
     // Configure a bean util that throws exceptions during type conversion
@@ -297,7 +297,7 @@ public class BeanUtil {
     }
   };
 
-  public static class EagerFailingCallback implements ValueSetErrorCallback {
+  public static class EagerFailingCallback extends OSGUtilSupport implements ValueSetErrorCallback {
 
     public void failedToSetValue( Object bean, String propertyName, Object value, String beanPropertyType,
         Throwable cause ) throws Exception {

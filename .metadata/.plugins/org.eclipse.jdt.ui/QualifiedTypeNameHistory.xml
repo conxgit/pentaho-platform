@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.pentaho.platform.util.messages.MessageUtil"/>
+<fullyQualifiedTypeName name="java.util.ResourceBundle"/>
+<fullyQualifiedTypeName name="java.util.Locale"/>
+<fullyQualifiedTypeName name="org.pentaho.platform.scheduler3.messsages.Messages"/>
+<fullyQualifiedTypeName name="org.quartz.impl.triggers.CronTriggerImpl"/>
+<fullyQualifiedTypeName name="org.quartz.impl.triggers.SimpleTriggerImpl"/>
+<fullyQualifiedTypeName name="org.quartz.impl.JobDetailImpl"/>
+<fullyQualifiedTypeName name="org.pentaho.platform.scheduler3.quartz.QuartzSchedulerAvailability"/>
+<fullyQualifiedTypeName name="java.lang.Override"/>
+<fullyQualifiedTypeName name="org.osgi.service.log.LogService"/>
+<fullyQualifiedTypeName name="org.pentaho.platform.scheduler3.quartz.OSGiQuartzScheduler"/>
+</qualifiedTypeNameHistroy>

@@ -103,6 +103,10 @@ public class ActionHarness extends BeanUtil {
   }
 
   public static class DefaultActionCallback extends EagerFailingCallback {
+	  
+	public  DefaultActionCallback() {
+		super.init();
+	}
 
     @Override
     public void propertyNotWritable( Object bean, String propertyName ) throws Exception {

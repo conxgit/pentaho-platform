@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.platform.api.action.IAction;
+import org.pentaho.platform.scheduler3.quartz.OSGiQuartzSchedulerV2;
 
 /**
  * An object that allows for the scheduling of IActions on the Pentaho platform
@@ -29,6 +30,8 @@ import org.pentaho.platform.api.action.IAction;
  * @author arodriguez
  */
 public interface IScheduler {
+  static public final String RESERVEDMAPKEY_MT_PID_FILTER	= "RESERVEDMAPKEY_MT_PID_FILTER";
+	
   public enum SchedulerStatus {
     RUNNING, PAUSED, STOPPED
   };

@@ -5,6 +5,7 @@ import org.apache.felix.dm.DependencyManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.api.scheduler3.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IScheduler;
 import org.pentaho.platform.scheduler3.blockout.PentahoBlockoutManager;
 
 public class Activator extends DependencyActivatorBase {
@@ -17,8 +18,8 @@ public class Activator extends DependencyActivatorBase {
 		manager.add(createComponent()
 				.setInterface(IBlockoutManager.class.getName(), null)
 				.setImplementation(PentahoBlockoutManager.class)
-				.add(createServiceDependency().setService(LogService.class).setRequired(false))
-		);
+				.add(createServiceDependency().setService(IScheduler.class).setRequired(true))
+				.add(createServiceDependency().setService(LogService.class).setRequired(false)));
 	}
 
 	@Override

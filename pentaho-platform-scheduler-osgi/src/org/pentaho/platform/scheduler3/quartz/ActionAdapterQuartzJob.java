@@ -54,337 +54,333 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 /**
- * A Quartz job that is responsible for executing the {@link IAction} referred to in the job context.
+ * A Quartz job that is responsible for executing the {@link IAction} referred
+ * to in the job context.
  * 
  * @author aphillips
  */
-public class ActionAdapterQuartzJob implements Job {
+public class ActionAdapterQuartzJob extends OSGiJobSupport {
 
-  static volatile LogService log;
-  private static final long RETRY_COUNT = 6;
-  private static final long RETRY_SLEEP_AMOUNT = 10000;
-  
-  private String outputFilePath = null;
-  private Object lock = new Object();
-  
-  
-  private volatile IScheduler scheduler;
-  
-  protected IAction resolveAction( IActionPluginManager pluginManager, JobDataMap jobDataMap ) throws  JobExecutionException {
-    String actionClass = jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS );
-    String actionId = jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONID );
+	private static final long RETRY_COUNT = 6;
+	private static final long RETRY_SLEEP_AMOUNT = 10000;
 
-    
+	private String outputFilePath = null;
+	private Object lock = new Object();
 
-    if ( StringUtils.isEmpty( actionId ) && StringUtils.isEmpty( actionClass ) ) {
-      throw new LoggingJobExecutionException( Messages.getInstance().getErrorString(
-          "ActionAdapterQuartzJob.ERROR_0001_REQUIRED_PARAM_MISSING", //$NON-NLS-1$
-          QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS, QuartzScheduler.RESERVEDMAPKEY_ACTIONID ) );
-    }
-    
-    IAction action = pluginManager.getActionPluginByActionId( actionId ).newInstance();
-    
-    return action;
-  }
+	private volatile IScheduler scheduler;
 
-  @SuppressWarnings( "unchecked" )
-  public void execute( JobExecutionContext context ) throws JobExecutionException {
-    JobDataMap jobDataMap = context.getMergedJobDataMap();
-    String actionUser = jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONUSER );
-    IActionPluginManager pluginManager = (IActionPluginManager)jobDataMap.get("IActionPluginManager");
+	protected IAction resolveAction(IActionPluginManager pluginManager,
+			JobDataMap jobDataMap) throws JobExecutionException {
+		String actionClass = jobDataMap
+				.getString(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONCLASS);
+		String actionId = jobDataMap
+				.getString(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONID);
 
-    Object bean = resolveAction( pluginManager, jobDataMap );
+		if (StringUtils.isEmpty(actionId) && StringUtils.isEmpty(actionClass)) {
+			throw new LoggingJobExecutionException(
+					Messages.getInstance()
+							.getErrorString(
+									"ActionAdapterQuartzJob.ERROR_0001_REQUIRED_PARAM_MISSING", //$NON-NLS-1$
+									OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONCLASS,
+									OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONID));
+		}
 
-    if ( !( bean instanceof IAction ) ) {
-      throw new LoggingJobExecutionException( Messages.getInstance().getErrorString(
-          "ActionAdapterQuartzJob.ERROR_0003_ACTION_WRONG_TYPE", jobDataMap.getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS ), //$NON-NLS-1$
-          IAction.class.getName() ) );
-    }
+		IAction action = null;
+		try {
+			action = pluginManager.getActionPluginByClassName(actionClass)
+					.newInstance();
+		} catch (Exception e) {
+			throw new JobExecutionException("Error instanciating IAction bean",
+					e);
+		}
 
-    final IAction actionBean = (IAction) bean;
+		return action;
+	}
 
-    try {
-      invokeAction( actionBean, actionUser, context, GeneralUtils.toSerializableValueMap(jobDataMap.getWrappedMap()) );
+	@SuppressWarnings("unchecked")
+	public void execute(JobExecutionContext context)
+			throws JobExecutionException {
+		super.init(context);
 
-    } catch ( Throwable t ) {
-      // ensure that scheduler thread isn't blocked on lock
-      synchronized ( lock ) {
-        lock.notifyAll();
-      }
+		JobDataMap jobDataMap = context.getMergedJobDataMap();
+		String actionUser = jobDataMap
+				.getString(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONUSER);
 
-      // We should not distinguish between checked and unchecked exceptions here. All job execution failures
-      // should result in a rethrow of a quartz exception
-      throw new LoggingJobExecutionException( Messages.getInstance().getErrorString(
-          "ActionAdapterQuartzJob.ERROR_0004_ACTION_FAILED", actionBean //$NON-NLS-1$
-              .getClass().getName() ), t );
-    }
-  }
+		Object bean = resolveAction(actionPluginManager, jobDataMap);
 
-  protected void invokeAction( final IAction actionBean, final String actionUser, final JobExecutionContext context,
-      final Map<String, Serializable> params ) throws Exception {
-    final Map<String, Serializable> jobParams = new HashMap<String, Serializable>( params ); // shallow copy
+		if (!(bean instanceof IAction)) {
+			throw new LoggingJobExecutionException(
+					Messages.getInstance()
+							.getErrorString(
+									"ActionAdapterQuartzJob.ERROR_0003_ACTION_WRONG_TYPE", jobDataMap.getString(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONCLASS), //$NON-NLS-1$
+									IAction.class.getName()));
+		}
 
-    // remove the scheduling infrastructure properties
-    params.remove( QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS );
-    params.remove( QuartzScheduler.RESERVEDMAPKEY_ACTIONID );
-    params.remove( QuartzScheduler.RESERVEDMAPKEY_ACTIONUSER );
-    final IBackgroundExecutionStreamProvider streamProvider =
-        (IBackgroundExecutionStreamProvider) params.get( QuartzScheduler.RESERVEDMAPKEY_STREAMPROVIDER );
-    params.remove( QuartzScheduler.RESERVEDMAPKEY_STREAMPROVIDER );
-    params.remove( QuartzScheduler.RESERVEDMAPKEY_UIPASSPARAM );
-    // The scheduled_fire_time is useful only to the blockoutAction see PDI-10171
-    if ( actionBean instanceof BlockoutAction ) {
-      params.put( IBlockoutManager.SCHEDULED_FIRE_TIME, context.getScheduledFireTime() );
-    }
+		final IAction actionBean = (IAction) bean;
 
-	  log.log(LogService.LOG_DEBUG, MessageFormat.format(
-	      "Scheduling system invoking action {0} as user {1} with params [ {2} ]", actionBean //$NON-NLS-1$
-	          .getClass().getName(), actionUser, QuartzScheduler.prettyPrintMap( params ) ) );
+		try {
+			invokeAction(actionBean, actionUser, context,
+					GeneralUtils.toSerializableValueMap(jobDataMap
+							.getWrappedMap()));
 
-    Callable<Boolean> actionBeanRunner = new Callable<Boolean>() {
-      public Boolean call() throws Exception {
-        LocaleHelper.setLocaleOverride( (Locale) params.get( LocaleHelper.USER_LOCALE_PARAM ) );
-        // sync job params to the action bean
-        ActionHarness actionHarness = new ActionHarness( actionBean );
-        boolean updateJob = false;
+		} catch (Throwable t) {
+			// ensure that scheduler thread isn't blocked on lock
+			synchronized (lock) {
+				lock.notifyAll();
+			}
 
-        final Map<String, Object> actionParams = new HashMap<String, Object>();
-        actionParams.putAll( params );
-        if ( streamProvider != null ) {
-          actionParams.put( "inputStream", streamProvider.getInputStream() );
-        }
-        actionHarness.setValues( actionParams, new ActionSequenceCompatibilityFormatter() );
+			// We should not distinguish between checked and unchecked
+			// exceptions here. All job execution failures
+			// should result in a rethrow of a quartz exception
+			throw new LoggingJobExecutionException(
+					Messages.getInstance()
+							.getErrorString(
+									"ActionAdapterQuartzJob.ERROR_0004_ACTION_FAILED", actionBean //$NON-NLS-1$
+											.getClass().getName()), t);
+		}
+	}
 
-        if ( actionBean instanceof IVarArgsAction ) {
-          actionParams.remove( "inputStream" );
-          actionParams.remove( "outputStream" );
-          ( (IVarArgsAction) actionBean ).setVarArgs( actionParams );
-        }
+	protected void invokeAction(final IAction actionBean,
+			final String actionUser, final JobExecutionContext context,
+			final Map<String, Serializable> params) throws Exception {
+		final Map<String, Serializable> jobParams = new HashMap<String, Serializable>(
+				params); // shallow copy
 
-        boolean waitForFileCreated = false;
-        OutputStream stream = null;
-        
-        if ( streamProvider != null ) {
- /*         actionParams.remove( "inputStream" );
-          if ( actionBean instanceof IStreamingAction ) {
-            streamProvider.setStreamingAction( (IStreamingAction) actionBean );
-          }
+		// remove the scheduling infrastructure properties
+		params.remove(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONCLASS);
+		params.remove(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONID);
+		params.remove(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONUSER);
+		final IBackgroundExecutionStreamProvider streamProvider = (IBackgroundExecutionStreamProvider) params
+				.get(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_STREAMPROVIDER);
+		params.remove(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_STREAMPROVIDER);
+		params.remove(OSGiQuartzSchedulerV2.RESERVEDMAPKEY_UIPASSPARAM);
+		// The scheduled_fire_time is useful only to the blockoutAction see
+		// PDI-10171
+		if (actionBean instanceof BlockoutAction) {
+			params.put(IBlockoutManager.SCHEDULED_FIRE_TIME,
+					context.getScheduledFireTime());
+		}
 
-          // BISERVER-9414 - validate that output path still exist
-          SchedulerOutputPathResolver resolver =
-              new SchedulerOutputPathResolver( streamProvider.getOutputPath(), actionUser );
-          String outputPath = resolver.resolveOutputFilePath();
-          actionParams.put( "useJcr", Boolean.TRUE );
-          actionParams.put( "jcrOutputPath", outputPath.substring( 0, outputPath.lastIndexOf( "/" ) ) );
+		log.log(LogService.LOG_DEBUG,
+				MessageFormat
+						.format("Scheduling system invoking action {0} as user {1} with params [ {2} ]", actionBean //$NON-NLS-1$
+										.getClass().getName(), actionUser,
+								OSGiQuartzSchedulerV2.prettyPrintMap(params)));
 
-          if ( !outputPath.equals( streamProvider.getOutputPath() ) ) {
-            streamProvider.setOutputFilePath( outputPath ); // set fallback path
-            updateJob = true; // job needs to be deleted and recreated with the new output path
-          }
+		Callable<Boolean> actionBeanRunner = new Callable<Boolean>() {
+			public Boolean call() throws Exception {
+				LocaleHelper.setLocaleOverride((Locale) params
+						.get(LocaleHelper.USER_LOCALE_PARAM));
+				// sync job params to the action bean
+				ActionHarness actionHarness = new ActionHarness(actionBean);
+				boolean updateJob = false;
 
-          stream = streamProvider.getOutputStream();
-          if ( stream instanceof ISourcesStreamEvents ) {
-            ( (ISourcesStreamEvents) stream ).addListener( new IStreamListener() {
-              public void fileCreated( final String filePath ) {
-                synchronized ( lock ) {
-                  outputFilePath = filePath;
-                  lock.notifyAll();
-                }
-              }
-            } );
-            waitForFileCreated = true;
-          }
-          actionParams.put( "outputStream", stream );
-          // The lineage_id is only useful for the metadata and not needed at this level see PDI-10171
-          actionParams.remove( QuartzScheduler.RESERVEDMAPKEY_LINEAGE_ID );
-          actionHarness.setValues( actionParams );*/
-        }
+				final Map<String, Object> actionParams = new HashMap<String, Object>();
+				actionParams.putAll(params);
+				if (streamProvider != null) {
+					actionParams.put("inputStream",
+							streamProvider.getInputStream());
+				}
+				actionHarness.setValues(actionParams,
+						new ActionSequenceCompatibilityFormatter());
 
-        actionBean.execute();
+				if (actionBean instanceof IVarArgsAction) {
+					actionParams.remove("inputStream");
+					actionParams.remove("outputStream");
+					((IVarArgsAction) actionBean).setVarArgs(actionParams);
+				}
 
-        if (stream != null) {
-          IOUtils.closeQuietly( stream );
-        }
+				boolean waitForFileCreated = false;
+				OutputStream stream = null;
 
-        if ( waitForFileCreated ) {
-          synchronized ( lock ) {
-            if ( outputFilePath == null ) {
-              lock.wait();
-            }
-          }
-          sendEmail( actionParams, params, outputFilePath );
-        }
-        
-        return updateJob;
-      }
-    };
+				if (streamProvider != null) {
+					/*
+					 * actionParams.remove( "inputStream" ); if ( actionBean
+					 * instanceof IStreamingAction ) {
+					 * streamProvider.setStreamingAction( (IStreamingAction)
+					 * actionBean ); }
+					 * 
+					 * // BISERVER-9414 - validate that output path still exist
+					 * SchedulerOutputPathResolver resolver = new
+					 * SchedulerOutputPathResolver(
+					 * streamProvider.getOutputPath(), actionUser ); String
+					 * outputPath = resolver.resolveOutputFilePath();
+					 * actionParams.put( "useJcr", Boolean.TRUE );
+					 * actionParams.put( "jcrOutputPath", outputPath.substring(
+					 * 0, outputPath.lastIndexOf( "/" ) ) );
+					 * 
+					 * if ( !outputPath.equals( streamProvider.getOutputPath() )
+					 * ) { streamProvider.setOutputFilePath( outputPath ); //
+					 * set fallback path updateJob = true; // job needs to be
+					 * deleted and recreated with the new output path }
+					 * 
+					 * stream = streamProvider.getOutputStream(); if ( stream
+					 * instanceof ISourcesStreamEvents ) { (
+					 * (ISourcesStreamEvents) stream ).addListener( new
+					 * IStreamListener() { public void fileCreated( final String
+					 * filePath ) { synchronized ( lock ) { outputFilePath =
+					 * filePath; lock.notifyAll(); } } } ); waitForFileCreated =
+					 * true; } actionParams.put( "outputStream", stream ); //
+					 * The lineage_id is only useful for the metadata and not
+					 * needed at this level see PDI-10171 actionParams.remove(
+					 * OSGiQuartzScheduler.RESERVEDMAPKEY_LINEAGE_ID );
+					 * actionHarness.setValues( actionParams );
+					 */
+				}
 
-    boolean requiresUpdate = false;
- /*   if ( ( actionUser == null ) || ( actionUser.equals( "system session" ) ) ) { //$NON-NLS-1$
-      // For now, don't try to run quartz jobs as authenticated if the user
-      // that created the job is a system user. See PPP-2350
-      requiresUpdate = SecurityHelper.getInstance().runAsAnonymous( actionBeanRunner );
-    } else {
-      try {
-        requiresUpdate = SecurityHelper.getInstance().runAsUser( actionUser, actionBeanRunner );
-      } catch ( Throwable t ) {
-        Object restartFlag = jobParams.get( QuartzScheduler.RESERVEDMAPKEY_RESTART_FLAG );
-        if ( restartFlag == null ) {
-          final SimpleJobTrigger trigger = new SimpleJobTrigger( new Date(), null, 0, 0 );
-          final Class<IAction> iaction = (Class<IAction>) actionBean.getClass();
-          // recreate the job in the context of the original creator
-          SecurityHelper.getInstance().runAsUser( actionUser, new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-              if(streamProvider != null) {
-                streamProvider.setStreamingAction( null ); // remove generated content  
-              }
-              QuartzJobKey jobKey = QuartzJobKey.parse( context.getJobDetail().getName() );
-              String jobName = jobKey.getJobName();
-              jobParams.put( QuartzScheduler.RESERVEDMAPKEY_RESTART_FLAG, Boolean.TRUE );
-              scheduler.createJob( jobName, iaction, jobParams, trigger, streamProvider );
-              log.log(LogService.LOG_WARNING, "New RunOnce job created for " + jobName + " -> possible startup synchronization error" );
-              return null;
-            }
-          } );
-        } else {
-          log.log(LogService.LOG_WARNING, "RunOnce already created, skipping" );
-          throw new Exception( t );
-        }
-      }
-    }*/
+				actionBean.execute();
 
-    scheduler.fireJobCompleted( actionBean, actionUser, params, streamProvider );
+				if (stream != null) {
+					IOUtils.closeQuietly(stream);
+				}
 
- /*   if ( requiresUpdate ) {
-      log.log(LogService.LOG_WARNING, "Output path for job: " + context.getJobDetail().getName() + " has changed. Job requires update" );
-      try {
-        final IJobTrigger trigger = scheduler.getJob( context.getJobDetail().getName() ).getJobTrigger();
-        final Class<IAction> iaction = (Class<IAction>) actionBean.getClass();
+				if (waitForFileCreated) {
+					synchronized (lock) {
+						if (outputFilePath == null) {
+							lock.wait();
+						}
+					}
+					sendEmail(actionParams, params, outputFilePath);
+				}
 
-        // remove job with outdated/invalid output path
-        scheduler.removeJob( context.getJobDetail().getName() );
+				return updateJob;
+			}
+		};
+		actionBeanRunner.call();
+		boolean requiresUpdate = false;
+		/*
+		 * if ( ( actionUser == null ) || ( actionUser.equals( "system session"
+		 * ) ) ) { //$NON-NLS-1$ // For now, don't try to run quartz jobs as
+		 * authenticated if the user // that created the job is a system user.
+		 * See PPP-2350 requiresUpdate =
+		 * SecurityHelper.getInstance().runAsAnonymous( actionBeanRunner ); }
+		 * else { try { requiresUpdate = SecurityHelper.getInstance().runAsUser(
+		 * actionUser, actionBeanRunner ); } catch ( Throwable t ) { Object
+		 * restartFlag = jobParams.get(
+		 * OSGiQuartzScheduler.RESERVEDMAPKEY_RESTART_FLAG ); if ( restartFlag
+		 * == null ) { final SimpleJobTrigger trigger = new SimpleJobTrigger(
+		 * new Date(), null, 0, 0 ); final Class<IAction> iaction =
+		 * (Class<IAction>) actionBean.getClass(); // recreate the job in the
+		 * context of the original creator
+		 * SecurityHelper.getInstance().runAsUser( actionUser, new
+		 * Callable<Void>() {
+		 * 
+		 * @Override public Void call() throws Exception { if(streamProvider !=
+		 * null) { streamProvider.setStreamingAction( null ); // remove
+		 * generated content } QuartzJobKey jobKey = QuartzJobKey.parse(
+		 * context.getJobDetail().getName() ); String jobName =
+		 * jobKey.getJobName(); jobParams.put(
+		 * OSGiQuartzScheduler.RESERVEDMAPKEY_RESTART_FLAG, Boolean.TRUE );
+		 * scheduler.createJob( jobName, iaction, jobParams, trigger,
+		 * streamProvider ); log.log(LogService.LOG_WARNING,
+		 * "New RunOnce job created for " + jobName +
+		 * " -> possible startup synchronization error" ); return null; } } ); }
+		 * else { log.log(LogService.LOG_WARNING,
+		 * "RunOnce already created, skipping" ); throw new Exception( t ); } }
+		 * }
+		 */
 
-        // recreate the job in the context of the original creator
-        SecurityHelper.getInstance().runAsUser( actionUser, new Callable<Void>() {
-          @Override
-          public Void call() throws Exception {
-            streamProvider.setStreamingAction( null ); // remove generated content
-            QuartzJobKey jobKey = QuartzJobKey.parse( context.getJobDetail().getName() );
-            String jobName = jobKey.getJobName();
-            org.pentaho.platform.api.scheduler2.Job j =
-                scheduler.createJob( jobName, iaction, jobParams, trigger, streamProvider );
-            log.log(LogService.LOG_WARNING, "New Job: " + j.getJobId() + " created" );
-            return null;
-          }
-        } );
-      } catch ( Exception e ) {
-        log.log(LogService.LOG_ERROR, e.getMessage(), e );
-      }
-    }*/
+		scheduler.fireJobCompleted(actionBean, actionUser, params,
+				streamProvider);
 
-      log.log(LogService.LOG_DEBUG,  MessageFormat.format(
-          "Scheduling system successfully invoked action {0} as user {1} with params [ {2} ]", actionBean //$NON-NLS-1$
-              .getClass().getName(), actionUser, QuartzScheduler.prettyPrintMap( params ) ) );
-  }
+		/*
+		 * if ( requiresUpdate ) { log.log(LogService.LOG_WARNING,
+		 * "Output path for job: " + context.getJobDetail().getName() +
+		 * " has changed. Job requires update" ); try { final IJobTrigger
+		 * trigger = scheduler.getJob( context.getJobDetail().getName()
+		 * ).getJobTrigger(); final Class<IAction> iaction = (Class<IAction>)
+		 * actionBean.getClass();
+		 * 
+		 * // remove job with outdated/invalid output path scheduler.removeJob(
+		 * context.getJobDetail().getName() );
+		 * 
+		 * // recreate the job in the context of the original creator
+		 * SecurityHelper.getInstance().runAsUser( actionUser, new
+		 * Callable<Void>() {
+		 * 
+		 * @Override public Void call() throws Exception {
+		 * streamProvider.setStreamingAction( null ); // remove generated
+		 * content QuartzJobKey jobKey = QuartzJobKey.parse(
+		 * context.getJobDetail().getName() ); String jobName =
+		 * jobKey.getJobName(); org.pentaho.platform.api.scheduler2.Job j =
+		 * scheduler.createJob( jobName, iaction, jobParams, trigger,
+		 * streamProvider ); log.log(LogService.LOG_WARNING, "New Job: " +
+		 * j.getJobId() + " created" ); return null; } } ); } catch ( Exception
+		 * e ) { log.log(LogService.LOG_ERROR, e.getMessage(), e ); } }
+		 */
 
-  private void sendEmail( Map<String, Object> actionParams, Map<String, Serializable> params, String filePath ) {
-/*    try {
-      IUnifiedRepository repo = PentahoSystem.get( IUnifiedRepository.class );
-      RepositoryFile sourceFile = repo.getFile( filePath );
-      // add metadata
-      Map<String, Serializable> metadata = repo.getFileMetadata( sourceFile.getId() );
-      String lineageId = (String) params.get( QuartzScheduler.RESERVEDMAPKEY_LINEAGE_ID );
-      metadata.put( QuartzScheduler.RESERVEDMAPKEY_LINEAGE_ID, lineageId );
-      repo.setFileMetadata( sourceFile.getId(), metadata );
-      // send email
-      SimpleRepositoryFileData data =
-          repo.getDataForRead( sourceFile.getId(), SimpleRepositoryFileData.class );      
-      
-      // if email is setup and we have tos, then do it
-      Emailer emailer = new Emailer();
-      if ( !emailer.setup() ) {
-        // email not configured
-        return;
-      }
-      String to = (String) actionParams.get( "_SCH_EMAIL_TO" );
-      String cc = (String) actionParams.get( "_SCH_EMAIL_CC" );
-      String bcc = (String) actionParams.get( "_SCH_EMAIL_BCC" );
-      if ( ( to == null || "".equals( to ) ) && ( cc == null || "".equals( cc ) )
-          && ( bcc == null || "".equals( bcc ) ) ) {
-        // no destination
-        return;
-      }
-      emailer.setTo( to );
-      emailer.setCc( cc );
-      emailer.setBcc( bcc );
-      emailer.setAttachment( data.getInputStream() );
-      emailer.setAttachmentName( "attachment" );
-      String attachmentName = (String) actionParams.get( "_SCH_EMAIL_ATTACHMENT_NAME" );
-      if ( attachmentName != null && !"".equals( attachmentName ) ) {
-        String path = filePath;
-        if ( path.endsWith( ".*" ) ) {
-          path = path.replace( ".*", "" );
-        }
-        String extension = MimeHelper.getExtension( data.getMimeType() );
-        if ( extension == null ) {
-          extension = ".bin";
-        }
-        if ( !attachmentName.endsWith( extension ) ) {
-          emailer.setAttachmentName( attachmentName + extension );
-        } else {
-          emailer.setAttachmentName( attachmentName );
-        }
-      } else if ( data != null ) {
-        String path = filePath;
-        if ( path.endsWith( ".*" ) ) {
-          path = path.replace( ".*", "" );
-        }
-        String extension = MimeHelper.getExtension( data.getMimeType() );
-        if ( extension == null ) {
-          extension = ".bin";
-        }
-        path = path.substring( path.lastIndexOf( "/" ) + 1, path.length() );
-        if ( !path.endsWith( extension ) ) {
-          emailer.setAttachmentName( path + extension );
-        } else {
-          emailer.setAttachmentName( path );
-        }
-      }
-      if ( data == null || data.getMimeType() == null || "".equals( data.getMimeType() ) ) {
-        emailer.setAttachmentMimeType( "binary/octet-stream" );
-      } else {
-        emailer.setAttachmentMimeType( data.getMimeType() );
-      }
-      String subject = (String) actionParams.get( "_SCH_EMAIL_SUBJECT" );
-      if ( subject != null && !"".equals( subject ) ) {
-        emailer.setSubject( subject );
-      } else {
-        emailer.setSubject( "Pentaho Scheduler: " + emailer.getAttachmentName() );
-      }
-      String message = (String) actionParams.get( "_SCH_EMAIL_MESSAGE" );
-      if ( subject != null && !"".equals( subject ) ) {
-        emailer.setBody( message );
-      }
-      emailer.send();
-    } catch ( Exception e ) {
-      log.log(LogService.LOG_WARNING, e.getMessage(), e );
-    }      */
-  }
+		log.log(LogService.LOG_DEBUG,
+				MessageFormat
+						.format("Scheduling system successfully invoked action {0} as user {1} with params [ {2} ]", actionBean //$NON-NLS-1$
+										.getClass().getName(), actionUser,
+								OSGiQuartzSchedulerV2.prettyPrintMap(params)));
+	}
 
-  class LoggingJobExecutionException extends JobExecutionException {
-    private static final long serialVersionUID = -4124907454208034326L;
+	private void sendEmail(Map<String, Object> actionParams,
+			Map<String, Serializable> params, String filePath) {
+		/*
+		 * try { IUnifiedRepository repo = PentahoSystem.get(
+		 * IUnifiedRepository.class ); RepositoryFile sourceFile = repo.getFile(
+		 * filePath ); // add metadata Map<String, Serializable> metadata =
+		 * repo.getFileMetadata( sourceFile.getId() ); String lineageId =
+		 * (String) params.get( OSGiQuartzScheduler.RESERVEDMAPKEY_LINEAGE_ID );
+		 * metadata.put( OSGiQuartzScheduler.RESERVEDMAPKEY_LINEAGE_ID,
+		 * lineageId ); repo.setFileMetadata( sourceFile.getId(), metadata ); //
+		 * send email SimpleRepositoryFileData data = repo.getDataForRead(
+		 * sourceFile.getId(), SimpleRepositoryFileData.class );
+		 * 
+		 * // if email is setup and we have tos, then do it Emailer emailer =
+		 * new Emailer(); if ( !emailer.setup() ) { // email not configured
+		 * return; } String to = (String) actionParams.get( "_SCH_EMAIL_TO" );
+		 * String cc = (String) actionParams.get( "_SCH_EMAIL_CC" ); String bcc
+		 * = (String) actionParams.get( "_SCH_EMAIL_BCC" ); if ( ( to == null ||
+		 * "".equals( to ) ) && ( cc == null || "".equals( cc ) ) && ( bcc ==
+		 * null || "".equals( bcc ) ) ) { // no destination return; }
+		 * emailer.setTo( to ); emailer.setCc( cc ); emailer.setBcc( bcc );
+		 * emailer.setAttachment( data.getInputStream() );
+		 * emailer.setAttachmentName( "attachment" ); String attachmentName =
+		 * (String) actionParams.get( "_SCH_EMAIL_ATTACHMENT_NAME" ); if (
+		 * attachmentName != null && !"".equals( attachmentName ) ) { String
+		 * path = filePath; if ( path.endsWith( ".*" ) ) { path = path.replace(
+		 * ".*", "" ); } String extension = MimeHelper.getExtension(
+		 * data.getMimeType() ); if ( extension == null ) { extension = ".bin";
+		 * } if ( !attachmentName.endsWith( extension ) ) {
+		 * emailer.setAttachmentName( attachmentName + extension ); } else {
+		 * emailer.setAttachmentName( attachmentName ); } } else if ( data !=
+		 * null ) { String path = filePath; if ( path.endsWith( ".*" ) ) { path
+		 * = path.replace( ".*", "" ); } String extension =
+		 * MimeHelper.getExtension( data.getMimeType() ); if ( extension == null
+		 * ) { extension = ".bin"; } path = path.substring( path.lastIndexOf(
+		 * "/" ) + 1, path.length() ); if ( !path.endsWith( extension ) ) {
+		 * emailer.setAttachmentName( path + extension ); } else {
+		 * emailer.setAttachmentName( path ); } } if ( data == null ||
+		 * data.getMimeType() == null || "".equals( data.getMimeType() ) ) {
+		 * emailer.setAttachmentMimeType( "binary/octet-stream" ); } else {
+		 * emailer.setAttachmentMimeType( data.getMimeType() ); } String subject
+		 * = (String) actionParams.get( "_SCH_EMAIL_SUBJECT" ); if ( subject !=
+		 * null && !"".equals( subject ) ) { emailer.setSubject( subject ); }
+		 * else { emailer.setSubject( "Pentaho Scheduler: " +
+		 * emailer.getAttachmentName() ); } String message = (String)
+		 * actionParams.get( "_SCH_EMAIL_MESSAGE" ); if ( subject != null &&
+		 * !"".equals( subject ) ) { emailer.setBody( message ); }
+		 * emailer.send(); } catch ( Exception e ) {
+		 * log.log(LogService.LOG_WARNING, e.getMessage(), e ); }
+		 */
+	}
 
-    public LoggingJobExecutionException( String msg ) {
-      super( msg );
-      log.log(LogService.LOG_ERROR, msg );
-    }
+	class LoggingJobExecutionException extends JobExecutionException {
+		private static final long serialVersionUID = -4124907454208034326L;
 
-    public LoggingJobExecutionException( String msg, Throwable t ) {
-      super( msg, t );
-      log.log(LogService.LOG_ERROR, msg, t );
-    }
+		public LoggingJobExecutionException(String msg) {
+			super(msg);
+			log.log(LogService.LOG_ERROR, msg);
+		}
 
-  }
+		public LoggingJobExecutionException(String msg, Throwable t) {
+			super(msg, t);
+			log.log(LogService.LOG_ERROR, msg, t);
+		}
+
+	}
 
 }

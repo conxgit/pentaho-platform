@@ -1,8 +1,0 @@
--buildpath:  \
-	osgi.core,\
-	osgi.cmpn,\
-	biz.aQute.bnd.annotation,\
-	${junit},\
-	pentaho-platform-api-osgi;version=latest
--sub:  \
-	*.bnd

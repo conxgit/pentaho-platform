@@ -1,6 +1,0 @@
-Bundle-Version: 1.0.0.${tstamp}
-Service-Component:  \
-	*
-Private-Package:  \
-	org.pentaho.platform.scheduler3.osgi
-Bundle-Activator: org.pentaho.platform.scheduler3.osgi.Activator

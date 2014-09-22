@@ -1,0 +1,70 @@
+package org.pentaho.platform.scheduler3.quartz;
+
+import java.beans.Transient;
+
+import org.apache.felix.dm.tracker.ServiceTracker;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.service.log.LogService;
+import org.pentaho.platform.api.action.IActionPluginManager;
+import org.pentaho.platform.api.scheduler3.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IScheduler;
+import org.pentaho.platform.scheduler3.blockout.PentahoBlockoutManager;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
+public abstract class OSGiJobSupport implements Job {
+	
+	protected transient LogService log;
+	protected transient IBlockoutManager blockMan;
+	protected transient IScheduler scheduler;
+	protected transient IActionPluginManager actionPluginManager;
+	
+	public void init(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+		try {
+			log = (LogService)getService(LogService.class,null);
+			scheduler = (IScheduler)getService(IScheduler.class,(String)jobExecutionContext.getJobDetail().getJobDataMap().get(IScheduler.RESERVEDMAPKEY_MT_PID_FILTER));
+			blockMan = new PentahoBlockoutManager(scheduler);
+			actionPluginManager = (IActionPluginManager)getService(IActionPluginManager.class,(String)jobExecutionContext.getJobDetail().getJobDataMap().get(IScheduler.RESERVEDMAPKEY_MT_PID_FILTER));
+		} catch (InvalidSyntaxException e1) {
+			throw new JobExecutionException(e1);
+		}
+	}
+	
+	@Transient
+	protected <T> T getService(Class<T> serviceClass, String filterString)
+			throws InvalidSyntaxException, JobExecutionException {
+		BundleContext context = FrameworkUtil.getBundle(BlockingQuartzJob.class).getBundleContext();
+		
+		T serviceInstance = null;
+
+		ServiceTracker serviceTracker;
+		if (filterString == null) {
+			serviceTracker = new ServiceTracker(context,
+					serviceClass.getName(), null);
+		} else {
+			String classFilter = "(" + Constants.OBJECTCLASS + "="
+					+ serviceClass.getName() + ")";
+			filterString = "(&" + classFilter + filterString + ")";
+			serviceTracker = new ServiceTracker(context,
+					context.createFilter(filterString), null);
+		}
+		serviceTracker.open();
+		try {
+			serviceInstance = (T) serviceTracker.waitForService(10 * 1000);
+
+			if (serviceInstance == null) {
+				throw new JobExecutionException("Failed to locate "+serviceClass + " service.");
+			} else {
+				return serviceInstance;
+			}
+		} catch (InterruptedException e) {
+			throw new JobExecutionException(serviceClass + " service not available: " + e.toString(),e);
+		}
+
+	}
+
+}

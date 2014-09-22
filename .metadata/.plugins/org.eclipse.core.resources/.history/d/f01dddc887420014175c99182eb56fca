@@ -1,0 +1,15 @@
+-buildpath:  \
+	org.apache.commons.collections;version=3.2,\
+	org.apache.commons.lang;version=2.4,\
+	pentaho-platform-api-osgi;version=latest,\
+	org.apache.commons.beanutils;version=1.8,\
+	org.apache.felix.log,\
+	osgi.core;version=4.2,\
+	org.apache.felix.dependencymanager
+Bundle-Version: 1.0.0.${tstamp}
+Export-Package:  \
+	org.pentaho.platform.util.beans,\
+	org.pentaho.platform.util.messages,\
+	org.pentaho.platform.engine.services.messages,\
+	org.pentaho.platform.engine.services.solution,\
+	org.pentaho.platform.api.action

@@ -29,8 +29,8 @@ import org.pentaho.platform.api.scheduler3.IScheduler;
 import org.pentaho.platform.api.scheduler3.Job;
 import org.pentaho.platform.api.scheduler3.SchedulerException;
 import org.pentaho.platform.api.scheduler3.SimpleJobTrigger;
+import org.pentaho.platform.scheduler3.quartz.OSGiQuartzSchedulerV2;
 import org.pentaho.platform.scheduler3.quartz.QuartzJobKey;
-import org.pentaho.platform.scheduler3.quartz.QuartzScheduler;
 import org.quartz.Trigger;
 
 public class BlockoutManagerUtil {
@@ -307,12 +307,12 @@ public class BlockoutManagerUtil {
     Date endDate = new Date( startDate.getTime() + 4 * TIME.YEAR.time );
 
     // Quartz Triggers
-    if ( scheduler instanceof QuartzScheduler ) {
+    if ( scheduler instanceof OSGiQuartzSchedulerV2 ) {
       try {
 
         List<Date> dates = new ArrayList<Date>();
         boolean endDateIsNull = jobTrigger.getEndTime() == null;
-        Trigger trigger = QuartzScheduler.createQuartzTrigger( jobTrigger, new QuartzJobKey( "test", "test" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+        Trigger trigger = OSGiQuartzSchedulerV2.createQuartzTrigger( jobTrigger, new QuartzJobKey( "test", "test" ) ); //$NON-NLS-1$ //$NON-NLS-2$
 
         // add previous trigger (it might be currently active)
         if ( manager != null ) {

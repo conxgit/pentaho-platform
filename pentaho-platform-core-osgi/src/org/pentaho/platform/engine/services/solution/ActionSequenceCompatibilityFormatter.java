@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.engine.services.messages.Messages;
 import org.pentaho.platform.util.beans.PropertyNameFormatter;
+import org.pentaho.platform.util.osgi.OSGUtilSupport;
 
 /**
  * This formatter exists to make old-style action sequence inputs, outputs and resource names work with bean utils
@@ -34,9 +35,11 @@ import org.pentaho.platform.util.beans.PropertyNameFormatter;
  *          argument name to convert, if needed.
  * @return camel case representation of name
  */
-public class ActionSequenceCompatibilityFormatter implements PropertyNameFormatter {
-
-  LogService logger;
+public class ActionSequenceCompatibilityFormatter extends OSGUtilSupport implements PropertyNameFormatter {
+	
+	public ActionSequenceCompatibilityFormatter() {
+		super.init();
+	}
 
   public String format( String name ) {
     return compatibilityToCamelCase( name );

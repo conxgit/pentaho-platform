@@ -17,8 +17,15 @@
 
 package org.pentaho.platform.scheduler3.quartz;
 
+import org.apache.felix.dm.tracker.ServiceTracker;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 import org.pentaho.platform.api.scheduler3.IBlockoutManager;
+import org.pentaho.platform.api.scheduler3.IScheduler;
 import org.pentaho.platform.scheduler3.blockout.BlockoutAction;
 import org.pentaho.platform.scheduler3.blockout.PentahoBlockoutManager;
 import org.quartz.Job;
@@ -31,11 +38,16 @@ import org.quartz.SchedulerException;
  * 
  * @author kwalker
  */
-public class BlockingQuartzJob implements Job {
+public class BlockingQuartzJob extends OSGiJobSupport {
 	
-	private volatile LogService log;
+	
+	public BlockingQuartzJob() {
+		super();
+	}
 	
   public void execute( final JobExecutionContext jobExecutionContext ) throws JobExecutionException {
+	  super.init(jobExecutionContext);
+	  
     try {
       if ( getBlockoutManager().shouldFireNow() || isBlockoutAction( jobExecutionContext ) ) { // We should always let the blockouts fire //$NON-NLS-1$
         createUnderlyingJob().execute( jobExecutionContext );
@@ -53,8 +65,12 @@ public class BlockingQuartzJob implements Job {
   }
 
   IBlockoutManager getBlockoutManager() throws SchedulerException {
-    return new PentahoBlockoutManager();
+    return super.blockMan;
   }
+  
+
+
+
 
   Job createUnderlyingJob() {
     return new ActionAdapterQuartzJob();
@@ -62,7 +78,7 @@ public class BlockingQuartzJob implements Job {
   
   protected boolean isBlockoutAction( JobExecutionContext ctx ) {
     try {
-      String actionClass = ctx.getJobDetail().getJobDataMap().getString( QuartzScheduler.RESERVEDMAPKEY_ACTIONCLASS );
+      String actionClass = ctx.getJobDetail().getJobDataMap().getString( OSGiQuartzSchedulerV2.RESERVEDMAPKEY_ACTIONCLASS );
       return BlockoutAction.class.getName().equals( actionClass );
     } catch ( Throwable t ) {
       log.log(LogService.LOG_WARNING, t.getMessage(), t );

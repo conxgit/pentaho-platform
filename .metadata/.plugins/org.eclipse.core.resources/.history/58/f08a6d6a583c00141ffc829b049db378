@@ -1,5 +1,0 @@
-Bundle-Version: 1.0.0.${tstamp}
-Private-Package:  \
-	pentaho-platform-scheduler-osgi
-Service-Component:  \
-	*

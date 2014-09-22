@@ -29,9 +29,13 @@ import org.pentaho.platform.api.scheduler3.SchedulerException;
 
 public class PentahoBlockoutManager implements IBlockoutManager {
 
-  private volatile IScheduler scheduler;
+  private IScheduler scheduler;
 
   public PentahoBlockoutManager() {
+  }
+  
+  public PentahoBlockoutManager(IScheduler scheduler) {
+	  this.scheduler = scheduler;
   }
 
   @Override

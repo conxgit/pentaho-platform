@@ -19,7 +19,7 @@ package org.pentaho.platform.api.scheduler3;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.pentaho.platform.scheduler3.quartz.QuartzScheduler;
+import org.pentaho.platform.scheduler3.quartz.OSGiQuartzSchedulerV2;
 
 public class JobTriggerAdapter extends XmlAdapter<JobTrigger, JobTrigger> {
 
@@ -28,7 +28,7 @@ public class JobTriggerAdapter extends XmlAdapter<JobTrigger, JobTrigger> {
   }
 
   public JobTrigger unmarshal( JobTrigger v ) throws Exception {
-    return v instanceof CronJobTrigger ? QuartzScheduler.createComplexTrigger( v.toString() ) : v;
+    return v instanceof CronJobTrigger ? OSGiQuartzSchedulerV2.createComplexTrigger( v.toString() ) : v;
   }
 
 }

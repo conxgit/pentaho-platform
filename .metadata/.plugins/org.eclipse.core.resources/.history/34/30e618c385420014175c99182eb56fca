@@ -1,0 +1,195 @@
+package org.pentaho.platform.engine.services.pluginmanager;
+
+
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.felix.dm.DependencyManager;
+import org.osgi.framework.BundleContext;
+import org.pentaho.platform.api.action.IActionPluginManager;
+
+
+public class PluginManagerComponent  implements IActionPluginManager {
+    protected BundleContext ctx;
+	private volatile DependencyManager dm;
+
+	private volatile ITenantUserDAOService tenantUserDAOService;
+	private volatile ITenantDAOService tenantDAOService;
+	private volatile TokenProvider tokenProvider;
+	private volatile IWorkgroupDAOService workgroupDAOService;
+	private volatile IDITenantDatabaseRepository diTenantDatabaseRepository;
+	private volatile  ICMISRepositoryClientService cmisRepositoryClientService;
+	protected volatile Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	
+	private Map<String,IWebUIPluginEditorRegistration> stepPluginRegistrations = new ConcurrentHashMap<String,IWebUIPluginEditorRegistration>();
+	private Map<String,IWebUIPluginEditorRegistration> jobEntryPluginRegistrations = new ConcurrentHashMap<String,IWebUIPluginEditorRegistration>();
+    
+	PluginRegistry registry = PluginRegistry.getInstance();
+
+	private Object pid;
+	private Marker logMarker;
+	
+	public PluginManagerComponent() throws KettleException {
+		if (!KettleEnvironment.isInitialized())
+			KettleEnvironment.init();
+	}
+	
+	public PluginManagerComponent(DependencyManager dm) throws KettleException {
+		this();
+		this.dm = dm; 
+	}
+	
+	//{{
+    // DM callback method
+    //}}
+	public void init() {
+	}
+	
+    //{{
+    // DM callback method
+    //}}
+	public void start() {
+		this.pid = StringUtil.extractDigits(ctx.toString());
+		MDC.put("tenant", "tenant"+this.pid);
+		this.logMarker = MarkerFactory.getMarker("tenant"+pid);
+		logger.info("Init..."+pid);
+		
+		logger.info("Starting...PluginManagerComponent-"+pid);
+		
+		//Make plugins available
+		registerPluginsAsRESTResources(this.jobEntryPluginRegistrations);
+		registerPluginsAsRESTResources(this.stepPluginRegistrations);
+	}	
+	
+	
+    private void registerPluginsAsRESTResources(
+			Map<String, IWebUIPluginEditorRegistration> registrations) {
+    	
+		//Register a REST service for this plugin
+		Properties properties = new Properties();
+		properties.put("wink.rest.path", "/tenant"+this.pid);
+		String tenantServiceProps = String.format("(%s=%s)", PID_KEY,this.pid);
+		
+		for (IWebUIPluginEditorRegistration editorReg : registrations.values()) {
+			logger.info("Registering etl plugin "+editorReg.getPluginId()+" for pid "+this.pid); 
+			Class<BaseResource> resourceCls = editorReg.getServerSideRESTResourceType();
+			try {
+				Component component = this.dm.createComponent()
+						.setInterface(Object.class.getName(),properties)
+						.setImplementation(resourceCls.newInstance())
+						.setCallbacks("init", "start", "stop", null)//init, start, stop and destroy.
+						.add(this.dm.createServiceDependency().setService(IPluginManagerService.class).setRequired(true))
+						.add(this.dm.createServiceDependency().setService(LogService.class).setRequired(false));
+				this.dm.add(component);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Error e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	//{{
+    // DM callback method
+    //}}
+	public void stop() {
+		logger.info("Stopping...PluginManagerComponent-"+pid);
+	}	
+	//{{
+	// DM callbacks
+	//}}
+	public void addPluginWebUIRegistration(IWebUIPluginEditorRegistration editorReg) {
+		this.pid = StringUtil.extractDigits(ctx.toString());
+		logger.info("Adding etl plugin "+editorReg.getPluginId()+" for pid "+this.pid); 
+		if (StepPluginType.class.getName().equals(editorReg.getPluginType().getName())) {
+			stepPluginRegistrations.put(editorReg.getPluginId(),editorReg);
+			if (editorReg.getCustomPluginId() != null)
+				stepPluginRegistrations.put(editorReg.getCustomPluginId(),editorReg);
+		}
+		else {
+			jobEntryPluginRegistrations.put(editorReg.getPluginId(),editorReg);
+		}
+		
+	}
+	
+	public void removePluginWebUIRegistration(IWebUIPluginEditorRegistration editorReg) {
+		stepPluginRegistrations.remove(editorReg.getPluginId());
+		jobEntryPluginRegistrations.remove(editorReg.getPluginId());
+	}	
+	//}}
+	
+	
+	
+	@Override
+	public Map<String, IWebUIPluginEditorRegistration> getStepPluginRegistrations() {
+		return stepPluginRegistrations;
+	}
+	@Override
+	public void setStepPluginRegistrations(
+			Map<String, IWebUIPluginEditorRegistration> stepPluginRegistrations) {
+		this.stepPluginRegistrations = stepPluginRegistrations;
+	}
+	@Override
+	public Map<String, IWebUIPluginEditorRegistration> getJobEntryPluginRegistrations() {
+		return jobEntryPluginRegistrations;
+	}
+	@Override
+	public void setJobEntryPluginRegistrations(
+			Map<String, IWebUIPluginEditorRegistration> jobEntryPluginRegistrations) {
+		this.jobEntryPluginRegistrations = jobEntryPluginRegistrations;
+	}
+	@Override
+	public ITenantUserDAOService getTenantUserDAOService() {
+		return tenantUserDAOService;
+	}
+	@Override
+	public void setTenantUserDAOService(ITenantUserDAOService tenantUserDAOService) {
+		this.tenantUserDAOService = tenantUserDAOService;
+	}
+	@Override
+	public ITenantDAOService getTenantDAOService() {
+		return tenantDAOService;
+	}
+	@Override
+	public void setTenantDAOService(ITenantDAOService tenantDAOService) {
+		this.tenantDAOService = tenantDAOService;
+	}
+	@Override
+	public TokenProvider getTokenProvider() {
+		return tokenProvider;
+	}
+	@Override
+	public void setTokenProvider(TokenProvider tokenProvider) {
+		this.tokenProvider = tokenProvider;
+	}
+	@Override
+	public IWorkgroupDAOService getWorkgroupDAOService() {
+		return workgroupDAOService;
+	}
+	@Override
+	public void setWorkgroupDAOService(IWorkgroupDAOService workgroupDAOService) {
+		this.workgroupDAOService = workgroupDAOService;
+	}
+	@Override
+	public IDITenantDatabaseRepository getDiTenantDatabaseRepository() {
+		return diTenantDatabaseRepository;
+	}
+	@Override
+	public void setDiTenantDatabaseRepository(
+			IDITenantDatabaseRepository diTenantDatabaseRepository) {
+		this.diTenantDatabaseRepository = diTenantDatabaseRepository;
+	}
+	@Override
+	public ICMISRepositoryClientService getCmisRepositoryClientService() {
+		return cmisRepositoryClientService;
+	}
+	@Override
+	public void setCmisRepositoryClientService(
+			ICMISRepositoryClientService cmisRepositoryClientService) {
+		this.cmisRepositoryClientService = cmisRepositoryClientService;
+	}
+}
